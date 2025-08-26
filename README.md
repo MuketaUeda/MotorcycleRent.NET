@@ -1,7 +1,155 @@
-# Desafio backend Mottu.
+# Motorcycle Rent API - Backend Challenge
+
 Seja muito bem-vindo ao desafio backend da Mottu, obrigado pelo interesse em fazer parte do nosso time e ajudar a melhorar a vida de milhares de pessoas.
 
-## Instruções
+## 🏗️ Estrutura do Projeto
+
+```
+moto-backend/
+├── src/
+│   ├── Moto.Api/                    # Camada de Apresentação
+│   │   ├── Controllers/             # Controllers da API
+│   │   ├── DTOs/                    # Data Transfer Objects
+│   │   │   ├── Motorcycles/         # DTOs para motos
+│   │   │   ├── Couriers/            # DTOs para entregadores
+│   │   │   └── Rentals/             # DTOs para aluguéis
+│   │   ├── Program.cs               # Configuração da aplicação
+│   │   └── appsettings.json         # Configurações
+│   │
+│   ├── Moto.Application/            # Camada de Aplicação
+│   │   ├── Services/                # Serviços de negócio
+│   │   ├── DTOs/                    # DTOs internos da aplicação
+│   │   ├── Mappings/                # AutoMapper profiles
+│   │   └── Validators/              # Validações
+│   │
+│   ├── Moto.Domain/                 # Camada de Domínio
+│   │   ├── Entities/                # Entidades de domínio
+│   │   ├── Interfaces/              # Contratos dos repositórios
+│   │   ├── Enums/                   # Enumerações
+│   │   ├── Exceptions/              # Exceções de domínio
+│   │   └── ValueObjects/            # Objetos de valor
+│   │
+│   ├── Moto.Infrastructure/         # Camada de Infraestrutura
+│   │   ├── DbContext/               # Entity Framework Context
+│   │   ├── Repositories/            # Implementações dos repositórios
+│   │   ├── Migrations/              # Migrações do banco
+│   │   └── DependencyInjection.cs   # Configuração de DI
+│   │
+│   └── Moto.Worker/                 # Worker para processamento de mensagens
+│       ├── Handlers/                # Handlers de eventos
+│       └── Worker.cs                # Worker principal
+│
+├── tests/                           # Testes
+│   ├── Moto.Api.IntegrationTests/   # Testes de integração da API
+│   ├── Moto.Application.UnitTests/  # Testes unitários da aplicação
+│   └── Moto.Domain.UnitTests/       # Testes unitários do domínio
+│
+├── docker-compose.yml               # Configuração Docker
+└── moto-backend.sln                 # Solução do projeto
+```
+
+## 🚀 Tecnologias Utilizadas
+
+- **.NET 8.0** - Framework principal
+- **Entity Framework Core** - ORM
+- **PostgreSQL** - Banco de dados
+- **RabbitMQ** - Sistema de mensageria
+- **Docker & Docker Compose** - Containerização
+- **Swagger/OpenAPI** - Documentação da API
+- **AutoMapper** - Mapeamento de objetos
+- **FluentValidation** - Validações
+
+## 🏛️ Arquitetura
+
+O projeto segue os princípios da **Clean Architecture** com as seguintes camadas:
+
+- **Domain**: Entidades, interfaces e regras de negócio
+- **Application**: Casos de uso e serviços de aplicação
+- **Infrastructure**: Implementações de repositórios e banco de dados
+- **API**: Controllers e DTOs de apresentação
+
+## 🛠️ Como Executar
+
+### Pré-requisitos
+- .NET 8.0 SDK
+- Docker e Docker Compose
+
+### Passos para execução
+
+1. **Clone o repositório**
+```bash
+git clone <repository-url>
+cd moto-backend
+```
+
+2. **Inicie os serviços do Docker**
+```bash
+docker-compose up -d
+```
+
+3. **Execute as migrações do banco**
+```bash
+dotnet ef database update --project src/Moto.Infrastructure --startup-project src/Moto.Api
+```
+
+4. **Execute a API**
+```bash
+dotnet run --project src/Moto.Api
+```
+
+5. **Acesse a documentação**
+```
+http://localhost:5215
+```
+
+## 📋 Endpoints Disponíveis
+
+### Motorcycles
+- `POST /api/motorcycles` - Criar moto
+- `GET /api/motorcycles` - Listar motos
+- `GET /api/motorcycles/{id}` - Buscar moto por ID
+- `PUT /api/motorcycles/{id}` - Atualizar moto
+- `DELETE /api/motorcycles/{id}` - Remover moto
+
+### Couriers
+- `POST /api/couriers` - Cadastrar entregador
+- `GET /api/couriers` - Listar entregadores
+- `PUT /api/couriers/{id}/cnh` - Atualizar foto da CNH
+
+### Rentals
+- `POST /api/rentals` - Criar aluguel
+- `GET /api/rentals` - Listar aluguéis
+- `PUT /api/rentals/{id}/return` - Finalizar aluguel
+
+## 🧪 Testes
+
+```bash
+# Executar todos os testes
+dotnet test
+
+# Executar testes específicos
+dotnet test tests/Moto.Domain.UnitTests/
+dotnet test tests/Moto.Application.UnitTests/
+dotnet test tests/Moto.Api.IntegrationTests/
+```
+
+## 📦 Docker
+
+```bash
+# Iniciar serviços
+docker-compose up -d
+
+# Parar serviços
+docker-compose down
+
+# Ver logs
+docker-compose logs -f
+```
+
+---
+
+## Instruções Originais do Desafio
+
 - O desafio é válido para diversos níveis, portanto não se preocupe se não conseguir resolver por completo.
 - A aplicação só será avaliada se estiver rodando, se necessário crie um passo a passo para isso.
 - Faça um clone do repositório em seu git pessoal para iniciar o desenvolvimento e não cite nada relacionado a Mottu.
@@ -57,20 +205,19 @@ https://app.swaggerhub.com/apis-docs/Mottu/mottu_desafio_backend/1.0.0
         - Para plano de 7 dias o valor da multa é de 20% sobre o valor das diárias não efetivadas.
         - Para plano de 15 dias o valor da multa é de 40% sobre o valor das diárias não efetivadas.
     - Quando a data informada for superior a data prevista do término, será cobrado um valor adicional de R$50,00 por diária adicional.
-    
 
 ## Diferenciais 🚀
-- Testes unitários
-- Testes de integração
-- EntityFramework e/ou Dapper
-- Docker e Docker Compose
-- Design Patterns
-- Documentação
-- Tratamento de erros
-- Arquitetura e modelagem de dados
-- Código escrito em língua inglesa
-- Código limpo e organizado
-- Logs bem estruturados
-- Seguir convenções utilizadas pela comunidade
+- ✅ Testes unitários
+- ✅ Testes de integração
+- ✅ EntityFramework e/ou Dapper
+- ✅ Docker e Docker Compose
+- ✅ Design Patterns
+- ✅ Documentação
+- ✅ Tratamento de erros
+- ✅ Arquitetura e modelagem de dados
+- ✅ Código escrito em língua inglesa
+- ✅ Código limpo e organizado
+- ✅ Logs bem estruturados
+- ✅ Seguir convenções utilizadas pela comunidade
   
 
