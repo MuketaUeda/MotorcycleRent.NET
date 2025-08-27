@@ -75,4 +75,56 @@ public class MotorcycleService
             Year = motorcycle.Year
         });
     }
+
+    // Update a motorcycle
+    public async Task<MotorcycleDto> UpdateAsync(Guid id, UpdateMotorcycleDto request)
+    {
+        var motorcycle = await _motorcycleRepository.GetByIdAsync(id);
+        if (motorcycle == null)
+        {
+            throw new InvalidOperationException("Motorcycle not found.");
+        }
+
+        // Check if new plate already exists (if plate is being updated)
+        if (!string.IsNullOrEmpty(request.Plate) && request.Plate != motorcycle.Plate)
+        {
+            var existingMotorcycle = await _motorcycleRepository.GetByPlateAsync(request.Plate);
+            if (existingMotorcycle != null)
+            {
+                throw new InvalidOperationException("A motorcycle with this license plate already exists.");
+            }
+        }
+
+        // Update only provided fields
+        if (!string.IsNullOrEmpty(request.Model))
+        {
+            motorcycle.Model = request.Model;
+        }
+
+        if (!string.IsNullOrEmpty(request.Plate))
+        {
+            motorcycle.Plate = request.Plate;
+        }
+
+        if (request.Year.HasValue)
+        {
+            motorcycle.Year = request.Year.Value;
+        }
+
+        await _motorcycleRepository.UpdateAsync(motorcycle);
+
+        return new MotorcycleDto
+        {
+            Id = motorcycle.Id,
+            Model = motorcycle.Model,
+            Plate = motorcycle.Plate,
+            Year = motorcycle.Year
+        };
+    }
+
+    // Delete a motorcycle
+    public async Task<bool> DeleteAsync(Guid id)
+    {
+        return await _motorcycleRepository.DeleteAsync(id);
+    }
 }

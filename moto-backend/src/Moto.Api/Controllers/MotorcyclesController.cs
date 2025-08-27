@@ -88,5 +88,49 @@ public class MotorcyclesController : ControllerBase{
         
         return Ok(responseDtos);
     }
-    
+
+    // Update a motorcycle
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UpdateMotorcycleRequest request)
+    {
+        try
+        {
+            // Map from API DTO to Application DTO
+            var appRequest = new UpdateMotorcycleDto
+            {
+                Plate = request.Plate
+            };
+
+            var result = await _motorcycleService.UpdateAsync(id, appRequest);
+            
+            // Map from Application DTO to API DTO
+            var responseDto = new MotorcycleResponse
+            {
+                Id = result.Id,
+                Model = result.Model,
+                Plate = result.Plate,
+                Year = result.Year
+            };
+
+            return Ok(responseDto);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    // Delete a motorcycle
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteAsync(Guid id)
+    {
+        var result = await _motorcycleService.DeleteAsync(id);
+        
+        if (!result)
+        {
+            return NotFound();
+        }
+        
+        return NoContent();
+    }
 }
