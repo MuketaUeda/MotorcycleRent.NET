@@ -4,7 +4,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Moto.Api.DTOs.Motorcycles;
 using Moto.Application.Services;
-using Moto.Application.DTOs;
+using Moto.Application.DTOs.Motorcycles;
 
 namespace Moto.Api.Controllers;
 
@@ -20,21 +20,21 @@ public class MotorcyclesController : ControllerBase{
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateAsync([FromBody] CreateMotorcycleDto apiDto){
+    public async Task<IActionResult> CreateAsync([FromBody] CreateMotorcycleRequest request){
         try
         {
             // Map from API DTO to Application DTO
-            var appRequest = new CreateMotorcycleRequest
+            var appRequest = new CreateMotorcycleDto
             {
-                Model = apiDto.Model,
-                LicensePlate = apiDto.LicensePlate,
-                Year = apiDto.Year
+                Model = request.Model,
+                Plate = request.Plate,
+                Year = request.Year
             };
 
             var result = await _motorcycleService.CreateAsync(appRequest);
             
             // Map from Application DTO to API DTO
-            var responseDto = new MotorcycleDto
+            var responseDto = new MotorcycleResponse
             {
                 Id = result.Id,
                 Model = result.Model,
@@ -61,7 +61,7 @@ public class MotorcyclesController : ControllerBase{
         }
         
         // Map from Application DTO to API DTO
-        var responseDto = new MotorcycleDto
+        var responseDto = new MotorcycleResponse
         {
             Id = motorcycleResponse.Id,
             Model = motorcycleResponse.Model,
@@ -78,7 +78,7 @@ public class MotorcyclesController : ControllerBase{
         var motorcycleResponses = await _motorcycleService.GetAllAsync();
         
         // Map from Application DTOs to API DTOs
-        var responseDtos = motorcycleResponses.Select(motorcycleResponse => new MotorcycleDto
+        var responseDtos = motorcycleResponses.Select(motorcycleResponse => new MotorcycleResponse
         {
             Id = motorcycleResponse.Id,
             Model = motorcycleResponse.Model,

@@ -23,9 +23,9 @@ public interface IMotorcycleRepository
     /// <summary>
     /// Search for a motorcycle by plate
     /// </summary>
-    /// <param name="licensePlate">Plate of the motorcycle</param>
+    /// <param name="plate">Plate of the motorcycle</param>
     /// <returns>Found motorcycle or null if not found</returns>
-    Task<Motorcycle?> GetByPlateAsync(string licensePlate);
+    Task<Motorcycle?> GetByPlateAsync(string plate);
 
     /// <summary>
     /// Search for all motorcycles

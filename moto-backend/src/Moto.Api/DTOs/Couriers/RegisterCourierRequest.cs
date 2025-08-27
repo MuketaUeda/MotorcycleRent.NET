@@ -1,0 +1,15 @@
+// RegisterCourierRequest - DTO para registro de entregadores
+// Propriedades: Identificador, Nome, CNPJ, DataNascimento, NumeroCNH, TipoCNH
+using Moto.Domain.Enums;
+
+namespace Moto.Api.DTOs.Couriers;
+
+public class RegisterCourierRequest
+{
+    public required string Name { get; set; }
+    public required string Cnpj { get; set; }
+    public required int BirthDate { get; set; }
+    public required string CnhNumber { get; set; }
+    public required CnhType CnhType { get; set; }
+    public required string CnhImageUrl { get; set; }
+}

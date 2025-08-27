@@ -54,8 +54,8 @@ public class MotorcycleRepository : IMotorcycleRepository{
     /// </summary>
     /// <param name="licensePlate">Plate of the motorcycle</param>
     /// <returns>Found motorcycle or null if not found</returns>
-    public async Task<Motorcycle?> GetByPlateAsync(string licensePlate){
-        return await _context.Motorcycles.FirstOrDefaultAsync(m => m.Plate == licensePlate);
+    public async Task<Motorcycle?> GetByPlateAsync(string plate){
+        return await _context.Motorcycles.FirstOrDefaultAsync(m => m.Plate == plate);
     }
 
     /// <summary>

@@ -2,11 +2,12 @@
 // Implements use cases: create, update, list, delete motorcycles
 using Moto.Domain.Entities;
 using Moto.Domain.Interfaces;
-using Moto.Application.DTOs;
+using Moto.Application.DTOs.Motorcycles;
 
 namespace Moto.Application.Services;
 
-public class MotorcycleService{
+public class MotorcycleService
+{
     private readonly IMotorcycleRepository _motorcycleRepository;
 
     // Dependency injection
@@ -16,24 +17,25 @@ public class MotorcycleService{
     }
     
     // Create a motorcycle
-    public async Task<MotorcycleResponse> CreateAsync(CreateMotorcycleRequest request){
-        var existingMotorcycle = await _motorcycleRepository.GetByPlateAsync(request.LicensePlate);
+    public async Task<MotorcycleDto> CreateAsync(CreateMotorcycleDto request)
+    {
+        var existingMotorcycle = await _motorcycleRepository.GetByPlateAsync(request.Plate);
         if (existingMotorcycle != null)
         {
             throw new InvalidOperationException("A motorcycle with this license plate already exists.");
         }
 
-        var motorcycle = new Motorcycle{
+        var motorcycle = new Motorcycle
+        {
             Id = Guid.NewGuid(),
             Year = request.Year,
             Model = request.Model,
-            Plate = request.LicensePlate,
-            CreatedAt = DateTime.UtcNow,
+            Plate = request.Plate
         };
 
         await _motorcycleRepository.AddAsync(motorcycle);
         
-        return new MotorcycleResponse
+        return new MotorcycleDto
         {
             Id = motorcycle.Id,
             Model = motorcycle.Model,
@@ -43,14 +45,15 @@ public class MotorcycleService{
     }
 
     // Get a motorcycle by id
-    public async Task<MotorcycleResponse?> GetByIdAsync(Guid id){
+    public async Task<MotorcycleDto?> GetByIdAsync(Guid id)
+    {
         var motorcycle = await _motorcycleRepository.GetByIdAsync(id);
         if (motorcycle == null)
         {
             return null;
         }
 
-        return new MotorcycleResponse
+        return new MotorcycleDto
         {
             Id = motorcycle.Id,
             Model = motorcycle.Model,
@@ -60,10 +63,11 @@ public class MotorcycleService{
     }
 
     // Get all motorcycles
-    public async Task<IEnumerable<MotorcycleResponse>> GetAllAsync(){
+    public async Task<IEnumerable<MotorcycleDto>> GetAllAsync()
+    {
         var motorcycles = await _motorcycleRepository.GetAllAsync();
         
-        return motorcycles.Select(motorcycle => new MotorcycleResponse
+        return motorcycles.Select(motorcycle => new MotorcycleDto
         {
             Id = motorcycle.Id,
             Model = motorcycle.Model,

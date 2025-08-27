@@ -1,0 +1,1 @@
+// RentalDtos - DTOs for rentals in Application layer

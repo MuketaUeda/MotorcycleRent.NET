@@ -1,0 +1,1 @@
+// CreateRentalDto - DTO for creating a rental in Application layer

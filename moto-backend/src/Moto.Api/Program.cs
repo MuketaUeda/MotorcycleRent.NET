@@ -1,5 +1,5 @@
 using Moto.Infrastructure;
-using Moto.Application.Services;
+using Moto.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +20,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddInfrastructure(builder.Configuration);
 
 // Add Application services
-builder.Services.AddScoped<MotorcycleService>();
+builder.Services.AddApplication();
 
 // Add CORS
 builder.Services.AddCors(options =>
