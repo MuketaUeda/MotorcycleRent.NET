@@ -30,6 +30,11 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<Courier> Couriers { get; set; }
 
     /// <summary>
+    /// DbSet for the Rental entity
+    /// </summary>
+    public DbSet<Rental> Rentals { get; set; }
+
+    /// <summary>
     /// Configure entity relationships and constraints
     /// </summary>
     /// <param name="modelBuilder">Model builder for configuration</param>

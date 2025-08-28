@@ -2,6 +2,7 @@
 // Registra serviços da camada de aplicação
 using Microsoft.Extensions.DependencyInjection;
 using Moto.Application.Services;
+using Moto.Application.Interfaces;
 
 namespace Moto.Application;
 
@@ -9,8 +10,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddScoped<MotorcycleService>();
-        services.AddScoped<CourierService>();
+        services.AddScoped<IMotorcycleService, MotorcycleService>();
+        services.AddScoped<ICourierService, CourierService>();
         
         return services;
     }

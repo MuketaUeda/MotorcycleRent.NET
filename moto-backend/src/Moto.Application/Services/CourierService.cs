@@ -3,10 +3,11 @@
 using Moto.Domain.Entities;
 using Moto.Domain.Interfaces;
 using Moto.Application.DTOs.Couriers;
+using Moto.Application.Interfaces;
 
 namespace Moto.Application.Services;
 
-public class CourierService
+public class CourierService : ICourierService
 {
     private readonly ICourierRepository _courierRepository;
 

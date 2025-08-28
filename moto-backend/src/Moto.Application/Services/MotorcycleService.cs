@@ -3,10 +3,11 @@
 using Moto.Domain.Entities;
 using Moto.Domain.Interfaces;
 using Moto.Application.DTOs.Motorcycles;
+using Moto.Application.Interfaces;
 
 namespace Moto.Application.Services;
 
-public class MotorcycleService
+public class MotorcycleService : IMotorcycleService
 {
     private readonly IMotorcycleRepository _motorcycleRepository;
     private readonly IRentalRepository _rentalRepository;
