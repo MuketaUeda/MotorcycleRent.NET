@@ -16,6 +16,7 @@ public static class DependencyInjection{
             options.UseNpgsql(connectionString, b => b.MigrationsAssembly("Moto.Infrastructure")));
         services.AddScoped<IMotorcycleRepository, MotorcycleRepository>();
         services.AddScoped<ICourierRepository, CourierRepository>();
+        services.AddScoped<IRentalRepository, RentalRepository>();
         return services;
     }
     

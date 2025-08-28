@@ -19,16 +19,19 @@ public class Rental
     [Required]
     public DateTime StartDate { get; set; }
     
+    [Required]
+    public DateTime ExpectedEndDate { get; set; }
+    
     public DateTime? EndDate { get; set; }
     
-    [Required]
-    public decimal TotalCost { get; set; }
+    // Costs calculated
+    public decimal? TotalCost { get; set; }
     
-    public bool IsActive { get; set; } = true;
+    public decimal? FineAmount { get; set; } // Fine for early return
     
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public decimal? AdditionalDaysCost { get; set; } // Cost for aditional days
     
-    public DateTime? UpdatedAt { get; set; }
+    public int? AdditionalDays { get; set; } // Total of aditional days
     
     // Navigation properties
     public virtual Motorcycle Motorcycle { get; set; } = null!;

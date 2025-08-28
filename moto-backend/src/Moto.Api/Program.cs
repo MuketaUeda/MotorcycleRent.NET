@@ -1,10 +1,17 @@
 using Moto.Infrastructure;
 using Moto.Application;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddFluentValidation(fv => 
+    {
+        fv.DisableDataAnnotationsValidation = true;
+        fv.RegisterValidatorsFromAssemblyContaining<Moto.Application.Validators.CreateMotorcycleDtoValidator>();
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

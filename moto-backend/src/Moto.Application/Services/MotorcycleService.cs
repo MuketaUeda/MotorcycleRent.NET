@@ -9,11 +9,13 @@ namespace Moto.Application.Services;
 public class MotorcycleService
 {
     private readonly IMotorcycleRepository _motorcycleRepository;
+    private readonly IRentalRepository _rentalRepository;
 
     // Dependency injection
-    public MotorcycleService(IMotorcycleRepository motorcycleRepository)
+    public MotorcycleService(IMotorcycleRepository motorcycleRepository, IRentalRepository rentalRepository)
     {
         _motorcycleRepository = motorcycleRepository;
+        _rentalRepository = rentalRepository;
     }
     
     // Create a motorcycle
@@ -125,6 +127,18 @@ public class MotorcycleService
     // Delete a motorcycle
     public async Task<bool> DeleteAsync(Guid id)
     {
+        var motorcycleResult = await _motorcycleRepository.GetByIdAsync(id);
+        if (motorcycleResult == null)
+        {
+            throw new InvalidOperationException("Motorcycle not found.");
+        }
+        
+        var activeRentals = await _rentalRepository.GetActiveRentalsByMotorcycleIdAsync(id);
+        if (activeRentals.Any())
+        {
+            throw new InvalidOperationException("Cannot delete motorcycle with active rentals.");
+        }
+        
         return await _motorcycleRepository.DeleteAsync(id);
     }
 }

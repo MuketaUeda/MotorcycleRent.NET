@@ -28,4 +28,33 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
     /// DbSet for the Courier entity
     /// </summary>
     public DbSet<Courier> Couriers { get; set; }
+
+    /// <summary>
+    /// Configure entity relationships and constraints
+    /// </summary>
+    /// <param name="modelBuilder">Model builder for configuration</param>
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        // Configure Motorcycle entity
+        modelBuilder.Entity<Motorcycle>(entity =>
+        {
+            entity.HasIndex(e => e.Plate)
+                  .IsUnique()
+                  .HasDatabaseName("IX_Motorcycles_Plate_Unique");
+        });
+
+        // Configure Courier entity
+        modelBuilder.Entity<Courier>(entity =>
+        {
+            entity.HasIndex(e => e.Cnpj)
+                  .IsUnique()
+                  .HasDatabaseName("IX_Couriers_Cnpj_Unique");
+            
+            entity.HasIndex(e => e.CnhNumber)
+                  .IsUnique()
+                  .HasDatabaseName("IX_Couriers_CnhNumber_Unique");
+        });
+    }
 }

@@ -8,7 +8,7 @@ public class Courier
     public Guid Id { get; set; }
     
     [Required]
-    [StringLength(11)]
+    [StringLength(14)]
     public string Cnpj { get; set; } = string.Empty;
     
     [Required]
@@ -16,7 +16,7 @@ public class Courier
     public string Name { get; set; } = string.Empty;
     
     [Required]
-    public int BirthDate { get; set; }
+    public DateTime BirthDate { get; set; }
     
     [Required]
     [StringLength(11)]

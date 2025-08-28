@@ -1,4 +1,5 @@
 // CreateMotorcycleDto - DTO for creating a motorcycle in Application layer
+
 namespace Moto.Application.DTOs.Motorcycles;
 
 public class CreateMotorcycleDto
