@@ -1,3 +1,4 @@
+
 using System.ComponentModel.DataAnnotations;
 
 namespace Moto.Domain.Entities;
@@ -30,5 +31,5 @@ public class MotorcycleEvent
     public string? AdditionalData { get; set; }
     
     // Navigation property
-    public virtual Motorcycle Motorcycle { get; set; } = null!;
+    public virtual Motorcycle? Motorcycle { get; set; }
 }

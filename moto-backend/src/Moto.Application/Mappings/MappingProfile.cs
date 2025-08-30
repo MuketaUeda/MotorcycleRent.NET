@@ -6,6 +6,7 @@ using Moto.Domain.Entities;
 using Moto.Application.DTOs.Motorcycles;
 using Moto.Application.DTOs.Couriers;
 using Moto.Application.DTOs.Rentals;
+using Moto.Application.DTOs.Events;
 
 namespace Moto.Application.Mappings;
 
@@ -17,6 +18,7 @@ public class MappingProfile : Profile
         CreateMap<Motorcycle, MotorcycleDto>().ReverseMap();
         CreateMap<Motorcycle, CreateMotorcycleDto>().ReverseMap();
         CreateMap<Motorcycle, UpdateMotorcycleDto>().ReverseMap();
+        CreateMap<Motorcycle, MotorcycleCreatedEventDto>();
 
         // Courier mappings
         CreateMap<Courier, CourierDto>().ReverseMap();

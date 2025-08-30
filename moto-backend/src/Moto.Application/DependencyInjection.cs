@@ -10,7 +10,16 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddScoped<IMotorcycleService, MotorcycleService>();
+        services.AddScoped<IMotorcycleService>(provider =>
+        {
+            var motorcycleRepository = provider.GetRequiredService<Moto.Domain.Interfaces.IMotorcycleRepository>();
+            var rentalRepository = provider.GetRequiredService<Moto.Domain.Interfaces.IRentalRepository>();
+            var mapper = provider.GetRequiredService<AutoMapper.IMapper>();
+            var eventPublisher = provider.GetService<IEventPublisher>();
+            
+            return new MotorcycleService(motorcycleRepository, rentalRepository, mapper, eventPublisher);
+        });
+        
         services.AddScoped<ICourierService, CourierService>();
         services.AddScoped<IRentalService, RentalService>();
         

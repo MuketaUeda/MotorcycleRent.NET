@@ -3,6 +3,7 @@
 using Moto.Domain.Entities;
 using Moto.Domain.Interfaces;
 using Moto.Application.DTOs.Motorcycles;
+using Moto.Application.DTOs.Events;
 using Moto.Application.Interfaces;
 using AutoMapper;
 
@@ -13,13 +14,15 @@ public class MotorcycleService : IMotorcycleService
     private readonly IMotorcycleRepository _motorcycleRepository;
     private readonly IRentalRepository _rentalRepository;
     private readonly IMapper _mapper;
+    private readonly IEventPublisher? _eventPublisher;
 
     // Dependency injection
-    public MotorcycleService(IMotorcycleRepository motorcycleRepository, IRentalRepository rentalRepository, IMapper mapper)
+    public MotorcycleService(IMotorcycleRepository motorcycleRepository, IRentalRepository rentalRepository, IMapper mapper, IEventPublisher? eventPublisher = null)
     {
         _motorcycleRepository = motorcycleRepository;
         _rentalRepository = rentalRepository;
         _mapper = mapper;
+        _eventPublisher = eventPublisher;
     }
     
     // Create a motorcycle
@@ -35,6 +38,10 @@ public class MotorcycleService : IMotorcycleService
         motorcycle.Id = Guid.NewGuid();
 
         await _motorcycleRepository.AddAsync(motorcycle);
+        
+        // Publish motorcycle created event
+        var eventDto = _mapper.Map<MotorcycleCreatedEventDto>(motorcycle);
+        _eventPublisher?.PublishMotorcycleCreatedEvent(eventDto);
         
         return _mapper.Map<MotorcycleDto>(motorcycle);
     }

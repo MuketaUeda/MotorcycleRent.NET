@@ -21,25 +21,17 @@ public class MotorcycleEventRepository : IMotorcycleEventRepository
         return motorcycleEvent;
     }
 
+    public async Task<IEnumerable<MotorcycleEvent>> GetAllAsync()
+    {
+        return await _context.MotorcycleEvents
+            .OrderByDescending(e => e.EventDate)
+            .ToListAsync();
+    }
+
     public async Task<IEnumerable<MotorcycleEvent>> GetByYearAsync(int year)
     {
         return await _context.MotorcycleEvents
             .Where(e => e.MotorcycleYear == year)
-            .OrderByDescending(e => e.EventDate)
-            .ToListAsync();
-    }
-
-    public async Task<IEnumerable<MotorcycleEvent>> GetByMotorcycleIdAsync(Guid motorcycleId)
-    {
-        return await _context.MotorcycleEvents
-            .Where(e => e.MotorcycleId == motorcycleId)
-            .OrderByDescending(e => e.EventDate)
-            .ToListAsync();
-    }
-
-    public async Task<IEnumerable<MotorcycleEvent>> GetAllAsync()
-    {
-        return await _context.MotorcycleEvents
             .OrderByDescending(e => e.EventDate)
             .ToListAsync();
     }

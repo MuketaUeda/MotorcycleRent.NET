@@ -102,6 +102,12 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
                   .HasConversion(
                       v => DateTime.SpecifyKind(v, DateTimeKind.Utc),
                       v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            
+            // Configure foreign key relationship
+            entity.HasOne(e => e.Motorcycle)
+                  .WithMany()
+                  .HasForeignKey(e => e.MotorcycleId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
