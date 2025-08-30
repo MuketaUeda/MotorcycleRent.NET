@@ -21,10 +21,11 @@ public interface IMotorcycleService
     Task<MotorcycleDto?> GetByIdAsync(Guid id);
 
     /// <summary>
-    /// Obtém todas as motocicletas
+    /// Obtém todas as motocicletas com filtro opcional por placa
     /// </summary>
-    /// <returns>Lista de motocicletas</returns>
-    Task<IEnumerable<MotorcycleDto>> GetAllAsync();
+    /// <param name="plateFilter">Filtro de placa opcional (busca parcial)</param>
+    /// <returns>Lista de motocicletas que correspondem ao filtro</returns>
+    Task<IEnumerable<MotorcycleDto>> GetAllAsync(string? plateFilter = null);
 
     /// <summary>
     /// Atualiza uma motocicleta

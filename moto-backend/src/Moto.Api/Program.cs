@@ -13,7 +13,7 @@ builder.Services.AddControllers()
     });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
+builder.Services.AddSwaggerGen(c => 
 {
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
     {
@@ -28,6 +28,9 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 // Add Application services
 builder.Services.AddApplication();
+
+// Add AutoMapper for API layer
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 // Add CORS
 builder.Services.AddCors(options =>

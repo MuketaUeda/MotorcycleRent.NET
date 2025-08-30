@@ -3,8 +3,9 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Moto.Api.DTOs.Motorcycles;
-using Moto.Application.Services;
+using Moto.Application.Interfaces;
 using Moto.Application.DTOs.Motorcycles;
+using AutoMapper;
 
 namespace Moto.Api.Controllers;
 
@@ -13,10 +14,12 @@ namespace Moto.Api.Controllers;
 
 public class MotorcyclesController : ControllerBase{
 
-    private readonly MotorcycleService _motorcycleService;
+    private readonly IMotorcycleService _motorcycleService;
+    private readonly IMapper _mapper;
 
-    public MotorcyclesController(MotorcycleService motorcycleService){
+    public MotorcyclesController(IMotorcycleService motorcycleService, IMapper mapper){
         _motorcycleService = motorcycleService;
+        _mapper = mapper;
     }
 
     [HttpPost]
@@ -24,23 +27,12 @@ public class MotorcyclesController : ControllerBase{
         try
         {
             // Map from API DTO to Application DTO
-            var appRequest = new CreateMotorcycleDto
-            {
-                Model = request.Model,
-                Plate = request.Plate,
-                Year = request.Year
-            };
+            var appRequest = _mapper.Map<CreateMotorcycleDto>(request);
 
             var result = await _motorcycleService.CreateAsync(appRequest);
             
             // Map from Application DTO to API DTO
-            var responseDto = new MotorcycleResponse
-            {
-                Id = result.Id,
-                Model = result.Model,
-                Plate = result.Plate,
-                Year = result.Year
-            };
+            var responseDto = _mapper.Map<MotorcycleResponse>(result);
 
             return Created($"/api/motorcycles/{responseDto.Id}", responseDto);
         }
@@ -61,30 +53,18 @@ public class MotorcyclesController : ControllerBase{
         }
         
         // Map from Application DTO to API DTO
-        var responseDto = new MotorcycleResponse
-        {
-            Id = motorcycleResponse.Id,
-            Model = motorcycleResponse.Model,
-            Plate = motorcycleResponse.Plate,
-            Year = motorcycleResponse.Year
-        };
+        var responseDto = _mapper.Map<MotorcycleResponse>(motorcycleResponse);
         
         return Ok(responseDto);
     }
 
-    // Get method to get all motorcycles
+    // Get method to get all motorcycles with optional plate filter
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync(){
-        var motorcycleResponses = await _motorcycleService.GetAllAsync();
+    public async Task<IActionResult> GetAllAsync([FromQuery] string? plate = null){
+        var motorcycleResponses = await _motorcycleService.GetAllAsync(plate);
         
         // Map from Application DTOs to API DTOs
-        var responseDtos = motorcycleResponses.Select(motorcycleResponse => new MotorcycleResponse
-        {
-            Id = motorcycleResponse.Id,
-            Model = motorcycleResponse.Model,
-            Plate = motorcycleResponse.Plate,
-            Year = motorcycleResponse.Year
-        });
+        var responseDtos = _mapper.Map<IEnumerable<MotorcycleResponse>>(motorcycleResponses);
         
         return Ok(responseDtos);
     }
@@ -96,21 +76,12 @@ public class MotorcyclesController : ControllerBase{
         try
         {
             // Map from API DTO to Application DTO
-            var appRequest = new UpdateMotorcycleDto
-            {
-                Plate = request.Plate
-            };
+            var appRequest = _mapper.Map<UpdateMotorcycleDto>(request);
 
             var result = await _motorcycleService.UpdateAsync(id, appRequest);
             
             // Map from Application DTO to API DTO
-            var responseDto = new MotorcycleResponse
-            {
-                Id = result.Id,
-                Model = result.Model,
-                Plate = result.Plate,
-                Year = result.Year
-            };
+            var responseDto = _mapper.Map<MotorcycleResponse>(result);
 
             return Ok(responseDto);
         }
@@ -124,13 +95,20 @@ public class MotorcyclesController : ControllerBase{
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
-        var result = await _motorcycleService.DeleteAsync(id);
-        
-        if (!result)
+        try
         {
-            return NotFound();
+            var result = await _motorcycleService.DeleteAsync(id);
+            
+            if (!result)
+            {
+                return NotFound();
+            }
+            
+            return NoContent();
         }
-        
-        return NoContent();
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

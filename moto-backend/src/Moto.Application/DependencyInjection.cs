@@ -12,6 +12,10 @@ public static class DependencyInjection
     {
         services.AddScoped<IMotorcycleService, MotorcycleService>();
         services.AddScoped<ICourierService, CourierService>();
+        services.AddScoped<IRentalService, RentalService>();
+        
+        // Add AutoMapper
+        services.AddAutoMapper(typeof(DependencyInjection).Assembly);
         
         return services;
     }

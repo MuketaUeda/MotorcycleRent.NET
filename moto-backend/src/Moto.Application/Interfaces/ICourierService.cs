@@ -35,6 +35,14 @@ public interface ICourierService
     Task<CourierDto> UpdateAsync(Guid id, UpdateCourierDto request);
 
     /// <summary>
+    /// Atualiza a foto da CNH de um entregador
+    /// </summary>
+    /// <param name="id">ID do entregador</param>
+    /// <param name="request">Dados da foto da CNH</param>
+    /// <returns>Entregador atualizado</returns>
+    Task<CourierDto> UpdateCnhImageAsync(Guid id, UpdateCnhImageDto request);
+
+    /// <summary>
     /// Remove um entregador
     /// </summary>
     /// <param name="id">ID do entregador a ser removido</param>

@@ -35,6 +35,11 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<Rental> Rentals { get; set; }
 
     /// <summary>
+    /// DbSet for the MotorcycleEvent entity
+    /// </summary>
+    public DbSet<MotorcycleEvent> MotorcycleEvents { get; set; }
+
+    /// <summary>
     /// Configure entity relationships and constraints
     /// </summary>
     /// <param name="modelBuilder">Model builder for configuration</param>
@@ -60,6 +65,43 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
             entity.HasIndex(e => e.CnhNumber)
                   .IsUnique()
                   .HasDatabaseName("IX_Couriers_CnhNumber_Unique");
+        });
+
+        // Configure Rental entity with DateTime conversions
+        modelBuilder.Entity<Rental>(entity =>
+        {
+            entity.Property(e => e.StartDate)
+                  .HasConversion(
+                      v => DateTime.SpecifyKind(v, DateTimeKind.Utc),
+                      v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+            entity.Property(e => e.ExpectedEndDate)
+                  .HasConversion(
+                      v => DateTime.SpecifyKind(v, DateTimeKind.Utc),
+                      v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+            entity.Property(e => e.EndDate)
+                  .HasConversion(
+                      v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v,
+                      v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
+        });
+
+        // Configure Courier entity with DateTime conversion
+        modelBuilder.Entity<Courier>(entity =>
+        {
+            entity.Property(e => e.BirthDate)
+                  .HasConversion(
+                      v => DateTime.SpecifyKind(v, DateTimeKind.Utc),
+                      v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+        });
+
+        // Configure MotorcycleEvent entity
+        modelBuilder.Entity<MotorcycleEvent>(entity =>
+        {
+            entity.Property(e => e.EventDate)
+                  .HasConversion(
+                      v => DateTime.SpecifyKind(v, DateTimeKind.Utc),
+                      v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
         });
     }
 }

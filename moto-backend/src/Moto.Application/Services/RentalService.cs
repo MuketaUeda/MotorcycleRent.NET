@@ -38,4 +38,210 @@ public class RentalService : IRentalService
         _returnRentalValidator = returnRentalValidator;
         _mapper = mapper;
     }
+
+    /// Creates a new rental
+    public async Task<RentalDto> CreateAsync(CreateRentalDto createRentalDto)
+    {
+        // Validate input
+        var validationResult = await _createRentalValidator.ValidateAsync(createRentalDto);
+        if (!validationResult.IsValid)
+        {
+            throw new ValidationException(validationResult.Errors);
+        }
+
+        // Check if motorcycle exists
+        var motorcycle = await _motorcycleRepository.GetByIdAsync(createRentalDto.MotorcycleId);
+        if (motorcycle == null)
+        {
+            throw new InvalidOperationException("Motorcycle not found.");
+        }
+
+        // Check if courier exists
+        var courier = await _courierRepository.GetByIdAsync(createRentalDto.CourierId);
+        if (courier == null)
+        {
+            throw new InvalidOperationException("Courier not found.");
+        }
+
+        // Business rule: Only couriers with category A can rent motorcycles
+        if (courier.CnhType != CnhType.A && courier.CnhType != CnhType.AB)
+        {
+            throw new InvalidOperationException("Only couriers with category A license can rent motorcycles.");
+        }
+
+        // Check if motorcycle is available (no active rentals)
+        var activeRentals = await _rentalRepository.GetActiveRentalsByMotorcycleIdAsync(createRentalDto.MotorcycleId);
+        if (activeRentals.Any())
+        {
+            throw new InvalidOperationException("Motorcycle is not available for rental.");
+        }
+
+        // Calculate dates according to business rules
+        var startDate = DateTime.UtcNow.Date.AddDays(1); // Start date is the day after creation
+        var expectedEndDate = startDate.AddDays((int)createRentalDto.PlanType);
+
+        // Create rental entity
+        var rental = new Rental
+        {
+            Id = Guid.NewGuid(),
+            MotorcycleId = createRentalDto.MotorcycleId,
+            CourierId = createRentalDto.CourierId,
+            PlanType = createRentalDto.PlanType,
+            StartDate = startDate,
+            ExpectedEndDate = expectedEndDate,
+            EndDate = null,
+            TotalCost = null,
+            FineAmount = null,
+            AdditionalDaysCost = null,
+            AdditionalDays = null
+        };
+
+        // Save to database
+        var createdRental = await _rentalRepository.AddAsync(rental);
+
+        // Map to DTO and return
+        return _mapper.Map<RentalDto>(createdRental);
+    }
+
+    /// Gets a rental by ID
+    public async Task<RentalDto?> GetByIdAsync(Guid id)
+    {
+        var rental = await _rentalRepository.GetByIdAsync(id);
+        if (rental == null)
+        {
+            return null;
+        }
+
+        return _mapper.Map<RentalDto>(rental);
+    }
+
+    /// Gets all rentals
+    public async Task<IEnumerable<RentalDto>> GetAllAsync()
+    {
+        var rentals = await _rentalRepository.GetAllAsync();
+        return _mapper.Map<IEnumerable<RentalDto>>(rentals);
+    }
+
+    /// Finalizes a rental (return)
+    public async Task<RentalDto> ReturnAsync(Guid id, ReturnRentalDto returnRentalDto)
+    {
+        // Validate input
+        var validationResult = await _returnRentalValidator.ValidateAsync(returnRentalDto);
+        if (!validationResult.IsValid)
+        {
+            throw new ValidationException(validationResult.Errors);
+        }
+
+        // Get the rental
+        var rental = await _rentalRepository.GetByIdAsync(id);
+        if (rental == null)
+        {
+            throw new InvalidOperationException("Rental not found.");
+        }
+
+        // Check if the rental is already returned
+        if (rental.EndDate.HasValue)
+        {
+            throw new InvalidOperationException("Rental already returned");
+        }
+
+        // Set the return date
+        rental.EndDate = returnRentalDto.ReturnDate;
+
+        // Calculate additional costs and fines
+        var additionalDays = 0;
+        var additionalDaysCost = 0m;
+        var fineAmount = 0m;
+
+        if (returnRentalDto.ReturnDate < rental.ExpectedEndDate)
+        {
+            // Early return - calculate fine
+            var unusedDays = (rental.ExpectedEndDate - returnRentalDto.ReturnDate).Days;
+            var dailyCost = GetDailyCost(rental.PlanType);
+            var unusedDaysCost = unusedDays * dailyCost;
+
+            // Calculate fine based on plan type
+            fineAmount = rental.PlanType switch
+            {
+                RentalPlan.SevenDays => unusedDaysCost * 0.20m, // 20% fine
+                RentalPlan.FifteenDays => unusedDaysCost * 0.40m, // 40% fine
+                _ => 0m // No fine for other plans
+            };
+        }
+        else if (returnRentalDto.ReturnDate > rental.ExpectedEndDate)
+        {
+            // Late return - calculate additional days cost
+            additionalDays = (returnRentalDto.ReturnDate - rental.ExpectedEndDate).Days;
+            additionalDaysCost = additionalDays * 50.00m; // R$50,00 per additional day
+        }
+
+        // Calculate total cost
+        var planCost = GetPlanCost(rental.PlanType);
+        var totalCost = planCost + additionalDaysCost + fineAmount;
+
+        // Update rental with calculated values
+        rental.AdditionalDays = additionalDays;
+        rental.AdditionalDaysCost = additionalDaysCost;
+        rental.FineAmount = fineAmount;
+        rental.TotalCost = totalCost;
+
+        // Save the updated rental
+        var updatedRental = await _rentalRepository.UpdateAsync(rental);
+
+        // Return the rental
+        return _mapper.Map<RentalDto>(updatedRental);
+    }
+
+    /// Gets daily rate for rental plan
+    private decimal GetDailyRate(RentalPlan planType)
+    {
+        return planType switch
+        {
+            RentalPlan.SevenDays => 30.00m,
+            RentalPlan.FifteenDays => 28.00m,
+            RentalPlan.ThirtyDays => 22.00m,
+            RentalPlan.FortyFiveDays => 20.00m,
+            RentalPlan.FiftyDays => 18.00m,
+            _ => throw new ArgumentException("Invalid rental plan type.")
+        };
+    }
+
+    /// Gets fine percentage for early return
+    private decimal GetFinePercentage(RentalPlan planType)
+    {
+        return planType switch
+        {
+            RentalPlan.SevenDays => 0.20m,  // 20%
+            RentalPlan.FifteenDays => 0.40m, // 40%
+            _ => 0.00m // No fine for other plans
+        };
+    }
+
+    /// Get the cost of the plan
+    private decimal GetPlanCost(RentalPlan planType)
+    {
+        return planType switch
+        {
+            RentalPlan.SevenDays => 30.00m * 7,
+            RentalPlan.FifteenDays => 28.00m * 15,
+            RentalPlan.ThirtyDays => 22.00m * 30,
+            RentalPlan.FortyFiveDays => 20.00m * 45,
+            RentalPlan.FiftyDays => 18.00m * 50,
+            _ => throw new ArgumentException("Invalid plan type")
+        };
+    }
+
+    /// Get the daily cost for a plan
+    private decimal GetDailyCost(RentalPlan planType)
+    {
+        return planType switch
+        {
+            RentalPlan.SevenDays => 30.00m,
+            RentalPlan.FifteenDays => 28.00m,
+            RentalPlan.ThirtyDays => 22.00m,
+            RentalPlan.FortyFiveDays => 20.00m,
+            RentalPlan.FiftyDays => 18.00m,
+            _ => throw new ArgumentException("Invalid plan type")
+        };
+    }
 }

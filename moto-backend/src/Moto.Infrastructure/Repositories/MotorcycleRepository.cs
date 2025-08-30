@@ -59,6 +59,23 @@ public class MotorcycleRepository : IMotorcycleRepository{
     }
 
     /// <summary>
+    /// Search for motorcycles by plate filter
+    /// </summary>
+    /// <param name="plateFilter">Plate filter (partial match)</param>
+    /// <returns>List of motorcycles matching the filter</returns>
+    public async Task<IReadOnlyList<Motorcycle>> GetByPlateFilterAsync(string? plateFilter)
+    {
+        if (string.IsNullOrWhiteSpace(plateFilter))
+        {
+            return await _context.Motorcycles.ToListAsync();
+        }
+
+        return await _context.Motorcycles
+            .Where(m => m.Plate.Contains(plateFilter.ToUpper()))
+            .ToListAsync();
+    }
+
+    /// <summary>
     /// Update an existing motorcycle
     /// </summary>
     /// <param name="motorcycle">Motorcycle with updated data</param>

@@ -34,6 +34,13 @@ public interface IMotorcycleRepository
     Task<IReadOnlyList<Motorcycle>> GetAllAsync();
 
     /// <summary>
+    /// Search for motorcycles by plate filter
+    /// </summary>
+    /// <param name="plateFilter">Plate filter (partial match)</param>
+    /// <returns>List of motorcycles matching the filter</returns>
+    Task<IReadOnlyList<Motorcycle>> GetByPlateFilterAsync(string? plateFilter);
+
+    /// <summary>
     /// Update an existing motorcycle
     /// </summary>
     /// <param name="motorcycle">Motorcycle with updated data</param>

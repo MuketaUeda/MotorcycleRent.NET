@@ -17,6 +17,7 @@ public static class DependencyInjection{
         services.AddScoped<IMotorcycleRepository, MotorcycleRepository>();
         services.AddScoped<ICourierRepository, CourierRepository>();
         services.AddScoped<IRentalRepository, RentalRepository>();
+        services.AddScoped<IMotorcycleEventRepository, MotorcycleEventRepository>();
         return services;
     }
     

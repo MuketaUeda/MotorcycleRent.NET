@@ -3,8 +3,9 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Moto.Api.DTOs.Couriers;
-using Moto.Application.Services;
+using Moto.Application.Interfaces;
 using Moto.Application.DTOs.Couriers;
+using AutoMapper;
 
 namespace Moto.Api.Controllers;
 
@@ -13,11 +14,13 @@ namespace Moto.Api.Controllers;
 
 public class CouriersController : ControllerBase
 {
-    private readonly CourierService _courierService;
+    private readonly ICourierService _courierService;
+    private readonly IMapper _mapper;
 
-    public CouriersController(CourierService courierService)
+    public CouriersController(ICourierService courierService, IMapper mapper)
     {
         _courierService = courierService;
+        _mapper = mapper;
     }
 
     [HttpPost]
@@ -26,29 +29,12 @@ public class CouriersController : ControllerBase
         try
         {
             // Map from API DTO to Application DTO
-            var appRequest = new CreateCourierDto
-            {
-                Name = request.Name,
-                Cnpj = request.Cnpj,
-                BirthDate = request.BirthDate,
-                CnhNumber = request.CnhNumber,
-                CnhType = request.CnhType,
-                CnhImageUrl = request.CnhImageUrl
-            };
+            var appRequest = _mapper.Map<CreateCourierDto>(request);
 
             var result = await _courierService.CreateAsync(appRequest);
             
             // Map from Application DTO to API DTO
-            var responseDto = new CourierResponse
-            {
-                Id = result.Id,
-                Name = result.Name,
-                Cnpj = result.Cnpj,
-                BirthDate = result.BirthDate,
-                CnhNumber = result.CnhNumber,
-                CnhType = result.CnhType.ToString(),
-                CnhImageUrl = result.CnhImageUrl,
-            };
+            var responseDto = _mapper.Map<CourierResponse>(result);
 
             return Created($"/api/couriers/{responseDto.Id}", responseDto);
         }
@@ -70,16 +56,7 @@ public class CouriersController : ControllerBase
         }
         
         // Map from Application DTO to API DTO
-        var responseDto = new CourierResponse
-        {
-            Id = courierResponse.Id,
-            Name = courierResponse.Name,
-            Cnpj = courierResponse.Cnpj,
-            BirthDate = courierResponse.BirthDate,
-            CnhNumber = courierResponse.CnhNumber,
-            CnhType = courierResponse.CnhType.ToString(),
-            CnhImageUrl = courierResponse.CnhImageUrl,
-        };
+        var responseDto = _mapper.Map<CourierResponse>(courierResponse);
         
         return Ok(responseDto);
     }
@@ -91,16 +68,7 @@ public class CouriersController : ControllerBase
         var courierResponses = await _courierService.GetAllAsync();
         
         // Map from Application DTOs to API DTOs
-        var responseDtos = courierResponses.Select(courierResponse => new CourierResponse
-        {
-            Id = courierResponse.Id,
-            Name = courierResponse.Name,
-            Cnpj = courierResponse.Cnpj,
-            BirthDate = courierResponse.BirthDate,
-            CnhNumber = courierResponse.CnhNumber,
-            CnhType = courierResponse.CnhType.ToString(),
-            CnhImageUrl = courierResponse.CnhImageUrl,
-        });
+        var responseDtos = _mapper.Map<IEnumerable<CourierResponse>>(courierResponses);
         
         return Ok(responseDtos);
     }
@@ -112,25 +80,34 @@ public class CouriersController : ControllerBase
         try
         {
             // Map from API DTO to Application DTO
-            var appRequest = new UpdateCourierDto
-            {
-                Name = request.Name,
-                CnhImageUrl = request.CnhImageUrl
-            };
+            var appRequest = _mapper.Map<UpdateCourierDto>(request);
 
             var result = await _courierService.UpdateAsync(id, appRequest);
             
             // Map from Application DTO to API DTO
-            var responseDto = new CourierResponse
-            {
-                Id = result.Id,
-                Name = result.Name,
-                Cnpj = result.Cnpj,
-                BirthDate = result.BirthDate,
-                CnhNumber = result.CnhNumber,
-                CnhType = result.CnhType.ToString(),
-                CnhImageUrl = result.CnhImageUrl,
-            };
+            var responseDto = _mapper.Map<CourierResponse>(result);
+
+            return Ok(responseDto);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    // Update CNH image - specific endpoint as per README
+    [HttpPut("{id:guid}/cnh")]
+    public async Task<IActionResult> UpdateCnhImageAsync(Guid id, [FromBody] UpdateCnhImageRequest request)
+    {
+        try
+        {
+            // Map from API DTO to Application DTO
+            var appRequest = _mapper.Map<UpdateCnhImageDto>(request);
+
+            var result = await _courierService.UpdateCnhImageAsync(id, appRequest);
+            
+            // Map from Application DTO to API DTO
+            var responseDto = _mapper.Map<CourierResponse>(result);
 
             return Ok(responseDto);
         }

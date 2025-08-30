@@ -4,6 +4,7 @@ using Moto.Domain.Entities;
 using Moto.Domain.Interfaces;
 using Moto.Application.DTOs.Motorcycles;
 using Moto.Application.Interfaces;
+using AutoMapper;
 
 namespace Moto.Application.Services;
 
@@ -11,12 +12,14 @@ public class MotorcycleService : IMotorcycleService
 {
     private readonly IMotorcycleRepository _motorcycleRepository;
     private readonly IRentalRepository _rentalRepository;
+    private readonly IMapper _mapper;
 
     // Dependency injection
-    public MotorcycleService(IMotorcycleRepository motorcycleRepository, IRentalRepository rentalRepository)
+    public MotorcycleService(IMotorcycleRepository motorcycleRepository, IRentalRepository rentalRepository, IMapper mapper)
     {
         _motorcycleRepository = motorcycleRepository;
         _rentalRepository = rentalRepository;
+        _mapper = mapper;
     }
     
     // Create a motorcycle
@@ -28,23 +31,12 @@ public class MotorcycleService : IMotorcycleService
             throw new InvalidOperationException("A motorcycle with this license plate already exists.");
         }
 
-        var motorcycle = new Motorcycle
-        {
-            Id = Guid.NewGuid(),
-            Year = request.Year,
-            Model = request.Model,
-            Plate = request.Plate
-        };
+        var motorcycle = _mapper.Map<Motorcycle>(request);
+        motorcycle.Id = Guid.NewGuid();
 
         await _motorcycleRepository.AddAsync(motorcycle);
         
-        return new MotorcycleDto
-        {
-            Id = motorcycle.Id,
-            Model = motorcycle.Model,
-            Plate = motorcycle.Plate,
-            Year = motorcycle.Year
-        };
+        return _mapper.Map<MotorcycleDto>(motorcycle);
     }
 
     // Get a motorcycle by id
@@ -56,27 +48,14 @@ public class MotorcycleService : IMotorcycleService
             return null;
         }
 
-        return new MotorcycleDto
-        {
-            Id = motorcycle.Id,
-            Model = motorcycle.Model,
-            Plate = motorcycle.Plate,
-            Year = motorcycle.Year
-        };
+        return _mapper.Map<MotorcycleDto>(motorcycle);
     }
 
-    // Get all motorcycles
-    public async Task<IEnumerable<MotorcycleDto>> GetAllAsync()
+    // Get all motorcycles with optional plate filter
+    public async Task<IEnumerable<MotorcycleDto>> GetAllAsync(string? plateFilter = null)
     {
-        var motorcycles = await _motorcycleRepository.GetAllAsync();
-        
-        return motorcycles.Select(motorcycle => new MotorcycleDto
-        {
-            Id = motorcycle.Id,
-            Model = motorcycle.Model,
-            Plate = motorcycle.Plate,
-            Year = motorcycle.Year
-        });
+        var motorcycles = await _motorcycleRepository.GetByPlateFilterAsync(plateFilter);
+        return _mapper.Map<IEnumerable<MotorcycleDto>>(motorcycles);
     }
 
     // Update a motorcycle
@@ -116,13 +95,7 @@ public class MotorcycleService : IMotorcycleService
 
         await _motorcycleRepository.UpdateAsync(motorcycle);
 
-        return new MotorcycleDto
-        {
-            Id = motorcycle.Id,
-            Model = motorcycle.Model,
-            Plate = motorcycle.Plate,
-            Year = motorcycle.Year
-        };
+        return _mapper.Map<MotorcycleDto>(motorcycle);
     }
 
     // Delete a motorcycle
