@@ -28,6 +28,13 @@ public class MotorcycleService : IMotorcycleService
     // Create a motorcycle
     public async Task<MotorcycleDto> CreateAsync(CreateMotorcycleDto request)
     {
+        // Check if motorcycle with same ID already exists
+        var existingMotorcycleById = await _motorcycleRepository.GetByIdAsync(request.Id);
+        if (existingMotorcycleById != null)
+        {
+            throw new InvalidOperationException("A motorcycle with this identifier already exists.");
+        }
+
         var existingMotorcycle = await _motorcycleRepository.GetByPlateAsync(request.Plate);
         if (existingMotorcycle != null)
         {
@@ -35,7 +42,6 @@ public class MotorcycleService : IMotorcycleService
         }
 
         var motorcycle = _mapper.Map<Motorcycle>(request);
-        motorcycle.Id = Guid.NewGuid();
 
         await _motorcycleRepository.AddAsync(motorcycle);
         
@@ -47,7 +53,7 @@ public class MotorcycleService : IMotorcycleService
     }
 
     // Get a motorcycle by id
-    public async Task<MotorcycleDto?> GetByIdAsync(Guid id)
+    public async Task<MotorcycleDto?> GetByIdAsync(string id)
     {
         var motorcycle = await _motorcycleRepository.GetByIdAsync(id);
         if (motorcycle == null)
@@ -66,7 +72,7 @@ public class MotorcycleService : IMotorcycleService
     }
 
     // Update a motorcycle
-    public async Task<MotorcycleDto> UpdateAsync(Guid id, UpdateMotorcycleDto request)
+    public async Task<MotorcycleDto> UpdateAsync(string id, UpdateMotorcycleDto request)
     {
         var motorcycle = await _motorcycleRepository.GetByIdAsync(id);
         if (motorcycle == null)
@@ -75,7 +81,7 @@ public class MotorcycleService : IMotorcycleService
         }
 
         // Check if new plate already exists (if plate is being updated)
-        if (!string.IsNullOrEmpty(request.Plate) && request.Plate != motorcycle.Plate)
+        if (request.Plate != motorcycle.Plate)
         {
             var existingMotorcycle = await _motorcycleRepository.GetByPlateAsync(request.Plate);
             if (existingMotorcycle != null)
@@ -84,21 +90,8 @@ public class MotorcycleService : IMotorcycleService
             }
         }
 
-        // Update only provided fields
-        if (!string.IsNullOrEmpty(request.Model))
-        {
-            motorcycle.Model = request.Model;
-        }
-
-        if (!string.IsNullOrEmpty(request.Plate))
-        {
-            motorcycle.Plate = request.Plate;
-        }
-
-        if (request.Year.HasValue)
-        {
-            motorcycle.Year = request.Year.Value;
-        }
+        // Update only the plate
+        motorcycle.Plate = request.Plate;
 
         await _motorcycleRepository.UpdateAsync(motorcycle);
 
@@ -106,7 +99,7 @@ public class MotorcycleService : IMotorcycleService
     }
 
     // Delete a motorcycle
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task<bool> DeleteAsync(string id)
     {
         var motorcycleResult = await _motorcycleRepository.GetByIdAsync(id);
         if (motorcycleResult == null)

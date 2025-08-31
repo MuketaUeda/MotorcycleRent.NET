@@ -1,5 +1,5 @@
-// CreateCourierDtoValidator - Validador para criação de entregadores na Application layer
-// Validações: CNPJ único, CNH único, tipos válidos, data de nascimento válida
+// CreateCourierDtoValidator - Validator for creating couriers in Application layer
+// Validations: unique CNPJ, unique CNH, valid types, valid birth date
 using FluentValidation;
 using Moto.Application.DTOs.Couriers;
 using Moto.Domain.Enums;
@@ -12,43 +12,43 @@ public class CreateCourierDtoValidator : AbstractValidator<CreateCourierDto>
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .WithMessage("O nome é obrigatório")
+            .WithMessage("Name is required")
             .MaximumLength(100)
-            .WithMessage("O nome deve ter no máximo 100 caracteres");
+            .WithMessage("Name must have maximum 100 characters");
 
         RuleFor(x => x.Cnpj)
             .NotEmpty()
-            .WithMessage("O CNPJ é obrigatório")
+            .WithMessage("CNPJ is required")
             .Length(14)
-            .WithMessage("O CNPJ deve ter 14 dígitos")
+            .WithMessage("CNPJ must have 14 digits")
             .Matches(@"^\d{14}$")
-            .WithMessage("O CNPJ deve conter apenas números");
+            .WithMessage("CNPJ must contain only numbers");
 
         RuleFor(x => x.BirthDate)
             .NotEmpty()
-            .WithMessage("A data de nascimento é obrigatória")
+            .WithMessage("Birth date is required")
             .LessThan(DateTime.Now.AddYears(-18))
-            .WithMessage("O entregador deve ter pelo menos 18 anos")
+            .WithMessage("Courier must be at least 18 years old")
             .GreaterThan(DateTime.Now.AddYears(-100))
-            .WithMessage("A data de nascimento não pode ser muito antiga");
+            .WithMessage("Birth date cannot be too old");
 
         RuleFor(x => x.CnhNumber)
             .NotEmpty()
-            .WithMessage("O número da CNH é obrigatório")
+            .WithMessage("CNH number is required")
             .Length(11)
-            .WithMessage("O número da CNH deve ter 11 dígitos")
+            .WithMessage("CNH number must have 11 digits")
             .Matches(@"^\d{11}$")
-            .WithMessage("O número da CNH deve conter apenas números");
+            .WithMessage("CNH number must contain only numbers");
 
         RuleFor(x => x.CnhType)
             .IsInEnum()
-            .WithMessage("O tipo da CNH deve ser A, B ou AB");
+            .WithMessage("CNH type must be A, B or AB");
 
         RuleFor(x => x.CnhImageUrl)
             .NotEmpty()
-            .WithMessage("A URL da imagem da CNH é obrigatória")
+            .WithMessage("CNH image URL is required")
             .Must(BeValidImageUrl)
-            .WithMessage("A URL da imagem deve ser válida");
+            .WithMessage("Image URL must be valid");
     }
 
     private static bool BeValidImageUrl(string? url)

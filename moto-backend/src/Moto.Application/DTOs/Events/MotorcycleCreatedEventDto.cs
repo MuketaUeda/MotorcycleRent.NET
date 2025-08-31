@@ -4,7 +4,7 @@ namespace Moto.Application.DTOs.Events;
 
 public class MotorcycleCreatedEventDto
 {
-    public Guid Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     public string Model { get; set; } = string.Empty;
     public string Plate { get; set; } = string.Empty;
     public int Year { get; set; }

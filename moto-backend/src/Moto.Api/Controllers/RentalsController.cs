@@ -74,21 +74,6 @@ public class RentalsController : ControllerBase
     }
 
     /// <summary>
-    /// Gets all rentals
-    /// </summary>
-    /// <returns>List of all rentals</returns>
-    [HttpGet]
-    public async Task<IActionResult> GetAllAsync()
-    {
-        var rentals = await _rentalService.GetAllAsync();
-        
-        // Map from Application DTOs to API DTOs
-        var responseDtos = _mapper.Map<IEnumerable<RentalResponse>>(rentals);
-        
-        return Ok(responseDtos);
-    }
-
-    /// <summary>
     /// Finalizes a rental (return)
     /// </summary>
     /// <param name="id">Rental ID</param>

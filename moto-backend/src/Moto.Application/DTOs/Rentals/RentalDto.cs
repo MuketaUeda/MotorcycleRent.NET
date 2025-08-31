@@ -7,8 +7,8 @@ namespace Moto.Application.DTOs.Rentals;
 public class RentalDto
 {
     public Guid Id { get; set; }
-    public Guid MotorcycleId { get; set; }
-    public Guid CourierId { get; set; }
+    public string MotorcycleId { get; set; } = string.Empty;
+    public string CourierId { get; set; } = string.Empty;
     public RentalPlan PlanType { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime ExpectedEndDate { get; set; }

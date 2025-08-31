@@ -15,7 +15,7 @@ public interface ICourierRepository{
     /// </summary>
     /// <param name="id">ID of the courier</param>
     /// <returns>Found courier or null if not found</returns>
-    Task<Courier?> GetByIdAsync(Guid id);
+    Task<Courier?> GetByIdAsync(string id);
 
     /// <summary>
     /// Search for a courier by CNPJ
@@ -49,6 +49,6 @@ public interface ICourierRepository{
     /// </summary>
     /// <param name="id">ID of the courier to be removed</param>
     /// <returns>True if removed successfully, false if not found</returns>
-    Task<bool> DeleteAsync(Guid id);
+    Task<bool> DeleteAsync(string id);
 
 }

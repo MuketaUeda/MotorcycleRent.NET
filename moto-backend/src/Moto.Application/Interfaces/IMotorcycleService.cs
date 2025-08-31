@@ -18,7 +18,7 @@ public interface IMotorcycleService
     /// </summary>
     /// <param name="id">ID da motocicleta</param>
     /// <returns>Motocicleta encontrada ou null se não encontrada</returns>
-    Task<MotorcycleDto?> GetByIdAsync(Guid id);
+    Task<MotorcycleDto?> GetByIdAsync(string id);
 
     /// <summary>
     /// Obtém todas as motocicletas com filtro opcional por placa
@@ -33,12 +33,12 @@ public interface IMotorcycleService
     /// <param name="id">ID da motocicleta</param>
     /// <param name="request">Dados atualizados da motocicleta</param>
     /// <returns>Motocicleta atualizada</returns>
-    Task<MotorcycleDto> UpdateAsync(Guid id, UpdateMotorcycleDto request);
+    Task<MotorcycleDto> UpdateAsync(string id, UpdateMotorcycleDto request);
 
     /// <summary>
     /// Remove uma motocicleta
     /// </summary>
     /// <param name="id">ID da motocicleta a ser removida</param>
     /// <returns>True se removida com sucesso, false caso contrário</returns>
-    Task<bool> DeleteAsync(Guid id);
+    Task<bool> DeleteAsync(string id);
 }

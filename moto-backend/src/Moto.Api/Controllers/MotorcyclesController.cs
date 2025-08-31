@@ -43,8 +43,8 @@ public class MotorcyclesController : ControllerBase{
     }
 
     // Get method to get a motorcycle by id
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetByIdAsync(Guid id){
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetByIdAsync(string id){
         var motorcycleResponse = await _motorcycleService.GetByIdAsync(id);
         
         if (motorcycleResponse == null)
@@ -70,8 +70,8 @@ public class MotorcyclesController : ControllerBase{
     }
 
     // Update a motorcycle
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UpdateMotorcycleRequest request)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateAsync(string id, [FromBody] UpdateMotorcycleRequest request)
     {
         try
         {
@@ -92,8 +92,8 @@ public class MotorcyclesController : ControllerBase{
     }
 
     // Delete a motorcycle
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteAsync(Guid id)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAsync(string id)
     {
         try
         {

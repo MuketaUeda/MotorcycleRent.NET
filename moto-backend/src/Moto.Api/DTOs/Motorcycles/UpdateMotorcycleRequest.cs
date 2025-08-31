@@ -1,5 +1,5 @@
-// UpdateMotorcycleRequest - DTO para atualização de motos
-// Propriedades: Placa (única propriedade editável)
+// UpdateMotorcycleRequest - DTO for updating motorcycles
+// Properties: Plate (only editable property)
 namespace Moto.Api.DTOs.Motorcycles;
 
 public class UpdateMotorcycleRequest

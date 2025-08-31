@@ -1,14 +1,14 @@
-// CourierResponse - DTO para detalhes completos de entregadores
-// Propriedades: Id, Nome, CNPJ, DataNascimento, NumeroCNH, TipoCNH, ImagemCNH, Status
+// CourierResponse - DTO for complete details of couriers
+// Properties: Id, Name, CNPJ, BirthDate, LicenseNumber, LicenseType, LicenseImage
 namespace Moto.Api.DTOs.Couriers;
 
 public class CourierResponse
 {
-    public Guid Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Cnpj { get; set; } = string.Empty;
-    public DateTime BirthDate { get; set; }
-    public string CnhNumber { get; set; } = string.Empty;
-    public string CnhType { get; set; } = string.Empty;
-    public string? CnhImageUrl { get; set; }
+    public required string Id { get; set; }
+    public required string Name { get; set; }
+    public required string Cnpj { get; set; }
+    public required DateTime BirthDate { get; set; }
+    public required string LicenseNumber { get; set; }
+    public required string LicenseType { get; set; }
+    public string? LicenseImage { get; set; }
 }

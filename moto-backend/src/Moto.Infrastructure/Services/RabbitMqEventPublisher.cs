@@ -5,7 +5,7 @@ using Moto.Application.DTOs.Events;
 using Moto.Application.Interfaces;
 using RabbitMQ.Client;
 
-namespace Moto.Api.Messaging;
+namespace Moto.Infrastructure.Services;
 
 public class RabbitMqEventPublisher : IEventPublisher, IDisposable
 {

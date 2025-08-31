@@ -5,6 +5,7 @@ namespace Moto.Application.DTOs.Couriers;
 
 public class CreateCourierDto
 {
+    public required string Id { get; set; }
     public required string Name { get; set; }
     public required string Cnpj { get; set; }
     public required DateTime BirthDate { get; set; }

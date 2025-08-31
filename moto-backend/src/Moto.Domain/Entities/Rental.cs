@@ -8,10 +8,10 @@ public class Rental
     public Guid Id { get; set; }
     
     [Required]
-    public Guid MotorcycleId { get; set; }
+    public string MotorcycleId { get; set; } = string.Empty;
     
     [Required]
-    public Guid CourierId { get; set; }
+    public string CourierId { get; set; } = string.Empty;
     
     [Required]
     public RentalPlan PlanType { get; set; }

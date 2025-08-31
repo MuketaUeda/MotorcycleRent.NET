@@ -23,7 +23,6 @@ public class MappingProfile : Profile
         // Courier mappings
         CreateMap<Courier, CourierDto>().ReverseMap();
         CreateMap<Courier, CreateCourierDto>().ReverseMap();
-        CreateMap<Courier, UpdateCourierDto>().ReverseMap();
         CreateMap<Courier, UpdateCnhImageDto>().ReverseMap();
 
         // Rental mappings

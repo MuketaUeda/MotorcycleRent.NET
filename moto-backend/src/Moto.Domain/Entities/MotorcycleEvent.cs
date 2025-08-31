@@ -8,7 +8,7 @@ public class MotorcycleEvent
     public Guid Id { get; set; }
     
     [Required]
-    public Guid MotorcycleId { get; set; }
+    public string MotorcycleId { get; set; } = string.Empty;
     
     [Required]
     [StringLength(50)]

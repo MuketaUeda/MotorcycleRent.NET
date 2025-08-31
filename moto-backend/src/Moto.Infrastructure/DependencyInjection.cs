@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Moto.Infrastructure.DbContext;
 using Moto.Infrastructure.Repositories;
+using Moto.Infrastructure.Services;
 using Moto.Domain.Interfaces;
+using Moto.Application.Interfaces;
 
 namespace Moto.Infrastructure;
 
@@ -18,6 +20,10 @@ public static class DependencyInjection{
         services.AddScoped<ICourierRepository, CourierRepository>();
         services.AddScoped<IRentalRepository, RentalRepository>();
         services.AddScoped<IMotorcycleEventRepository, MotorcycleEventRepository>();
+        
+        // Add Infrastructure Services
+        services.AddSingleton<IEventPublisher, RabbitMqEventPublisher>();
+        
         return services;
     }
     

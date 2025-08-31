@@ -37,7 +37,7 @@ public class MotorcycleRepository : IMotorcycleRepository{
     /// </summary>
     /// <param name="id">ID of the motorcycle</param>
     /// <returns>Found motorcycle or null if not found</returns>
-    public async Task<Motorcycle?> GetByIdAsync(Guid id){
+    public async Task<Motorcycle?> GetByIdAsync(string id){
         return await _context.Motorcycles.FindAsync(id);
     }
 
@@ -91,7 +91,7 @@ public class MotorcycleRepository : IMotorcycleRepository{
     /// </summary>
     /// <param name="id">ID of the motorcycle to be removed</param>
     /// <returns>True if removed successfully, false if not found</returns>
-    public async Task<bool> DeleteAsync(Guid id){
+    public async Task<bool> DeleteAsync(string id){
         var motorcycle = await GetByIdAsync(id);
         if (motorcycle != null){
             _context.Motorcycles.Remove(motorcycle);

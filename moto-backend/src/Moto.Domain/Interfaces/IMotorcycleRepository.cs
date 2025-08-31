@@ -18,7 +18,7 @@ public interface IMotorcycleRepository
     /// </summary>
     /// <param name="id">ID of the motorcycle</param>
     /// <returns>Found motorcycle or null if not found</returns>
-    Task<Motorcycle?> GetByIdAsync(Guid id);
+    Task<Motorcycle?> GetByIdAsync(string id);
 
     /// <summary>
     /// Search for a motorcycle by plate
@@ -52,5 +52,5 @@ public interface IMotorcycleRepository
     /// </summary>
     /// <param name="id">ID of the motorcycle to be removed</param>
     /// <returns>True if removed successfully, false if not found</returns>
-    Task<bool> DeleteAsync(Guid id);
+    Task<bool> DeleteAsync(string id);
 }

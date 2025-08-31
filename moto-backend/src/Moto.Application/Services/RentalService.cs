@@ -77,8 +77,8 @@ public class RentalService : IRentalService
         }
 
         // Calculate dates according to business rules
-        var startDate = DateTime.UtcNow.Date.AddDays(1); // Start date is the day after creation
-        var expectedEndDate = startDate.AddDays((int)createRentalDto.PlanType);
+        var startDate = createRentalDto.StartDate;
+        var expectedEndDate = createRentalDto.ExpectedEndDate;
 
         // Create rental entity
         var rental = new Rental
@@ -89,7 +89,7 @@ public class RentalService : IRentalService
             PlanType = createRentalDto.PlanType,
             StartDate = startDate,
             ExpectedEndDate = expectedEndDate,
-            EndDate = null,
+            EndDate = null, // Will be set when rental is returned
             TotalCost = null,
             FineAmount = null,
             AdditionalDaysCost = null,
@@ -113,13 +113,6 @@ public class RentalService : IRentalService
         }
 
         return _mapper.Map<RentalDto>(rental);
-    }
-
-    /// Gets all rentals
-    public async Task<IEnumerable<RentalDto>> GetAllAsync()
-    {
-        var rentals = await _rentalRepository.GetAllAsync();
-        return _mapper.Map<IEnumerable<RentalDto>>(rentals);
     }
 
     /// Finalizes a rental (return)
@@ -148,17 +141,19 @@ public class RentalService : IRentalService
         // Set the return date
         rental.EndDate = returnRentalDto.ReturnDate;
 
-        // Calculate additional costs and fines
+        // Calculate costs based on actual rental period (from start date to return date)
+        var actualRentalDays = (returnRentalDto.ReturnDate - rental.StartDate).Days;
+        var baseCost = actualRentalDays * GetDailyCost(rental.PlanType);
+        
         var additionalDays = 0;
         var additionalDaysCost = 0m;
         var fineAmount = 0m;
 
         if (returnRentalDto.ReturnDate < rental.ExpectedEndDate)
         {
-            // Early return - calculate fine
+            // Early return - calculate fine on unused days
             var unusedDays = (rental.ExpectedEndDate - returnRentalDto.ReturnDate).Days;
-            var dailyCost = GetDailyCost(rental.PlanType);
-            var unusedDaysCost = unusedDays * dailyCost;
+            var unusedDaysCost = unusedDays * GetDailyCost(rental.PlanType);
 
             // Calculate fine based on plan type
             fineAmount = rental.PlanType switch
@@ -175,9 +170,8 @@ public class RentalService : IRentalService
             additionalDaysCost = additionalDays * 50.00m; // R$50,00 per additional day
         }
 
-        // Calculate total cost
-        var planCost = GetPlanCost(rental.PlanType);
-        var totalCost = planCost + additionalDaysCost + fineAmount;
+        // Calculate total cost: base cost + additional days + fine
+        var totalCost = baseCost + additionalDaysCost + fineAmount;
 
         // Update rental with calculated values
         rental.AdditionalDays = additionalDays;

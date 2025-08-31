@@ -4,7 +4,9 @@ namespace Moto.Domain.Entities;
 
 public class Motorcycle
 {
-    public Guid Id { get; set; }
+    [Required]
+    [StringLength(50)]
+    public string Id { get; set; } = string.Empty;
     
     [Required]
     [StringLength(50)]

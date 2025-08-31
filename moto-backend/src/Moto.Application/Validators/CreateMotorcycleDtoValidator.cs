@@ -1,5 +1,5 @@
-// CreateMotorcycleDtoValidator - Validador para criação de motos na Application layer
-// Validações: placa única, ano válido, modelo obrigatório
+// CreateMotorcycleDtoValidator - Validator for creating motorcycles in Application layer
+// Validations: unique plate, valid year, required model
 using FluentValidation;
 using Moto.Application.DTOs.Motorcycles;
 
@@ -11,22 +11,22 @@ public class CreateMotorcycleDtoValidator : AbstractValidator<CreateMotorcycleDt
     {
         RuleFor(x => x.Plate)
             .NotEmpty()
-            .WithMessage("A placa é obrigatória")
+            .WithMessage("License plate is required")
             .Length(7, 8)
-            .WithMessage("A placa deve ter entre 7 e 8 caracteres")
+            .WithMessage("License plate must have between 7 and 8 characters")
             .Matches(@"^[A-Z]{3}[0-9][0-9A-Z][0-9]{2}$|^[A-Z]{3}[0-9]{4}$")
-            .WithMessage("A placa deve estar no formato válido (ex: ABC1234 ou ABC1D23)");
+            .WithMessage("License plate must be in valid format (e.g., ABC1234 or ABC1D23)");
 
         RuleFor(x => x.Year)
             .NotEmpty()
-            .WithMessage("O ano é obrigatório")
+            .WithMessage("Year is required")
             .InclusiveBetween(1900, DateTime.Now.Year + 1)
-            .WithMessage($"O ano deve estar entre 1900 e {DateTime.Now.Year + 1}");
+            .WithMessage($"Year must be between 1900 and {DateTime.Now.Year + 1}");
 
         RuleFor(x => x.Model)
             .NotEmpty()
-            .WithMessage("O modelo é obrigatório")
+            .WithMessage("Model is required")
             .MaximumLength(100)
-            .WithMessage("O modelo deve ter no máximo 100 caracteres");
+            .WithMessage("Model must have maximum 100 characters");
     }
 }

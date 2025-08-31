@@ -42,7 +42,7 @@ public class CourierRepository : ICourierRepository
     /// </summary>
     /// <param name="id">ID do entregador</param>
     /// <returns>Entregador encontrado ou null se não encontrado</returns>
-    public async Task<Courier?> GetByIdAsync(Guid id)
+    public async Task<Courier?> GetByIdAsync(string id)
     {
         return await _context.Couriers.FindAsync(id);
     }
@@ -93,7 +93,7 @@ public class CourierRepository : ICourierRepository
     /// </summary>
     /// <param name="id">ID do entregador a ser removido</param>
     /// <returns>True se o entregador foi removido, false caso contrário</returns>
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task<bool> DeleteAsync(string id)
     {
         var courier = await GetByIdAsync(id);
         if (courier != null)

@@ -1,5 +1,5 @@
-// CreateRentalDtoValidator - Validador para criação de aluguéis na Application layer
-// Validações: entregador habilitado categoria A, planos válidos, IDs obrigatórios
+// CreateRentalDtoValidator - Validator for creating rentals in Application layer
+// Validations: courier with category A license, valid plans, required IDs
 using FluentValidation;
 using Moto.Application.DTOs.Rentals;
 using Moto.Domain.Enums;
@@ -12,17 +12,29 @@ public class CreateRentalDtoValidator : AbstractValidator<CreateRentalDto>
     {
         RuleFor(x => x.MotorcycleId)
             .NotEmpty()
-            .WithMessage("O ID da motocicleta é obrigatório");
+            .WithMessage("Motorcycle ID is required");
 
         RuleFor(x => x.CourierId)
             .NotEmpty()
-            .WithMessage("O ID do entregador é obrigatório");
+            .WithMessage("Courier ID is required");
+
+        RuleFor(x => x.StartDate)
+            .NotEmpty()
+            .WithMessage("Start date is required")
+            .GreaterThan(DateTime.UtcNow.Date)
+            .WithMessage("Start date must be after current date");
+
+        RuleFor(x => x.ExpectedEndDate)
+            .NotEmpty()
+            .WithMessage("Expected end date is required")
+            .GreaterThan(x => x.StartDate)
+            .WithMessage("Expected end date must be after start date");
 
         RuleFor(x => x.PlanType)
             .IsInEnum()
-            .WithMessage("O tipo de plano deve ser válido (7, 15, 30, 45 ou 50 dias)")
+            .WithMessage("Plan type must be valid (7, 15, 30, 45 or 50 days)")
             .Must(BeValidPlanType)
-            .WithMessage("O tipo de plano deve ser um dos valores válidos: 7, 15, 30, 45 ou 50 dias");
+            .WithMessage("Plan type must be one of the valid values: 7, 15, 30, 45 or 50 days");
     }
 
     private static bool BeValidPlanType(RentalPlan planType)

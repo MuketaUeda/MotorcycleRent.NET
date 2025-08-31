@@ -32,10 +32,6 @@ builder.Services.AddApplication();
 // Add AutoMapper for API layer
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
-// Add Event Publisher
-builder.Services.AddSingleton<Moto.Application.Interfaces.IEventPublisher, Moto.Api.Messaging.RabbitMqEventPublisher>();
-
-
 // Add CORS
 builder.Services.AddCors(options =>
 {

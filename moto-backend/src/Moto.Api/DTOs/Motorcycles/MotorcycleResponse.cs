@@ -1,11 +1,11 @@
-// MotorcycleResponse - DTO for motorcycle data response in API layer
-// Properties: Id, Year, Model, Plate, IsAvailable, CreatedAt, UpdatedAt
+// MotorcycleResponse - DTO for motorcycle responses in API layer
+
 namespace Moto.Api.DTOs.Motorcycles;
 
 public class MotorcycleResponse
 {
-    public Guid Id { get; set; }
-    public string Model { get; set; } = string.Empty;
-    public string Plate { get; set; } = string.Empty;
+    public required string Id { get; set; }
+    public required string Model { get; set; }
+    public required string Plate { get; set; }
     public required int Year { get; set; }
 }

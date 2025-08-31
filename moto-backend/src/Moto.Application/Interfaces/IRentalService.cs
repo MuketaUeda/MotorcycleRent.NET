@@ -21,12 +21,6 @@ public interface IRentalService
     Task<RentalDto?> GetByIdAsync(Guid id);
 
     /// <summary>
-    /// Obtém todas as locações
-    /// </summary>
-    /// <returns>Lista de locações</returns>
-    Task<IEnumerable<RentalDto>> GetAllAsync();
-
-    /// <summary>
     /// Finaliza uma locação (devolução)
     /// </summary>
     /// <param name="id">ID da locação</param>

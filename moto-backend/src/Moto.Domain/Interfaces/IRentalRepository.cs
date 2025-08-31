@@ -19,17 +19,18 @@ public interface IRentalRepository
     Task<Rental?> GetByIdAsync(Guid id);
 
     /// <summary>
-    /// Obtém todas as locações
-    /// </summary>
-    /// <returns>Lista de locações</returns>
-    Task<IEnumerable<Rental>> GetAllAsync();
-
-    /// <summary>
     /// Obtém todas as locações ativas de uma motocicleta
     /// </summary>
     /// <param name="motorcycleId">ID da motocicleta</param>
     /// <returns>Lista de locações ativas</returns>
-    Task<IEnumerable<Rental>> GetActiveRentalsByMotorcycleIdAsync(Guid motorcycleId);
+    Task<IEnumerable<Rental>> GetActiveRentalsByMotorcycleIdAsync(string motorcycleId);
+
+    /// <summary>
+    /// Obtém todas as locações ativas de um entregador
+    /// </summary>
+    /// <param name="courierId">ID do entregador</param>
+    /// <returns>Lista de locações ativas</returns>
+    Task<IEnumerable<Rental>> GetActiveRentalsByCourierIdAsync(string courierId);
 
     /// <summary>
     /// Atualiza uma locação

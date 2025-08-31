@@ -1,5 +1,5 @@
-// ReturnRentalDtoValidator - Validador para finalização de aluguel
-// Validações: data de retorno obrigatória, não pode ser anterior à data de início
+// ReturnRentalDtoValidator - Validator for finalizing a rental
+// Validations: return date required, cannot be in the past
 using FluentValidation;
 using Moto.Application.DTOs.Rentals;
 
@@ -11,8 +11,8 @@ public class ReturnRentalDtoValidator : AbstractValidator<ReturnRentalDto>
     {
         RuleFor(x => x.ReturnDate)
             .NotEmpty()
-            .WithMessage("A data de retorno é obrigatória")
-            .GreaterThan(DateTime.Now)
-            .WithMessage("A data de retorno deve ser futura");
+            .WithMessage("Return date is required")
+            .GreaterThanOrEqualTo(DateTime.Today)
+            .WithMessage("Return date must be today or in the future");
     }
 }

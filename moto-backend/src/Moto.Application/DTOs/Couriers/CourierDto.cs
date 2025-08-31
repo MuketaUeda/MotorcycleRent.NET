@@ -5,11 +5,11 @@ namespace Moto.Application.DTOs.Couriers;
 
 public class CourierDto
 {
-    public Guid Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Cnpj { get; set; } = string.Empty;
-    public DateTime BirthDate { get; set; }
-    public string CnhNumber { get; set; } = string.Empty;
-    public CnhType CnhType { get; set; }
+    public required string Id { get; set; }
+    public required string Name { get; set; }
+    public required string Cnpj { get; set; }
+    public required DateTime BirthDate { get; set; }
+    public required string CnhNumber { get; set; }
+    public required CnhType CnhType { get; set; }
     public string? CnhImageUrl { get; set; }
 }

@@ -1,5 +1,5 @@
 // CourierService - Serviço de aplicação para entregadores
-// Implementa casos de uso: cadastrar, atualizar perfil, listar, buscar por CNPJ/CNH
+// Implementa casos de uso: cadastrar entregador e atualizar foto da CNH
 using Moto.Domain.Entities;
 using Moto.Domain.Interfaces;
 using Moto.Application.DTOs.Couriers;
@@ -23,6 +23,13 @@ public class CourierService : ICourierService
     // Create a courier
     public async Task<CourierDto> CreateAsync(CreateCourierDto request)
     {
+        // Verificar se já existe um courier com o mesmo ID
+        var existingCourierById = await _courierRepository.GetByIdAsync(request.Id);
+        if (existingCourierById != null)
+        {
+            throw new InvalidOperationException("A courier with this ID already exists.");
+        }
+
         // Verificar se já existe um courier com o mesmo CNPJ
         var existingCourierByCnpj = await _courierRepository.GetByCnpjAsync(request.Cnpj);
         if (existingCourierByCnpj != null)
@@ -38,59 +45,14 @@ public class CourierService : ICourierService
         }
 
         var courier = _mapper.Map<Courier>(request);
-        courier.Id = Guid.NewGuid();
 
         await _courierRepository.AddAsync(courier);
         
         return _mapper.Map<CourierDto>(courier);
     }
 
-    // Get a courier by id
-    public async Task<CourierDto?> GetByIdAsync(Guid id)
-    {
-        var courier = await _courierRepository.GetByIdAsync(id);
-        if (courier == null)
-        {
-            return null;
-        }
-
-        return _mapper.Map<CourierDto>(courier);
-    }
-
-    // Get all couriers
-    public async Task<IEnumerable<CourierDto>> GetAllAsync()
-    {
-        var couriers = await _courierRepository.GetAllAsync();
-        return _mapper.Map<IEnumerable<CourierDto>>(couriers);
-    }
-
-    // Update courier profile
-    public async Task<CourierDto> UpdateAsync(Guid id, UpdateCourierDto request)
-    {
-        var courier = await _courierRepository.GetByIdAsync(id);
-        if (courier == null)
-        {
-            throw new InvalidOperationException("Courier not found.");
-        }
-
-        // Atualizar apenas os campos permitidos
-        if (!string.IsNullOrEmpty(request.Name))
-        {
-            courier.Name = request.Name;
-        }
-
-        if (!string.IsNullOrEmpty(request.CnhImageUrl))
-        {
-            courier.CnhImageUrl = request.CnhImageUrl;
-        }
-
-        await _courierRepository.UpdateAsync(courier);
-
-        return _mapper.Map<CourierDto>(courier);
-    }
-
     // Update CNH image
-    public async Task<CourierDto> UpdateCnhImageAsync(Guid id, UpdateCnhImageDto request)
+    public async Task<CourierDto> UpdateCnhImageAsync(string id, UpdateCnhImageDto request)
     {
         var courier = await _courierRepository.GetByIdAsync(id);
         if (courier == null)
@@ -110,12 +72,6 @@ public class CourierService : ICourierService
         await _courierRepository.UpdateAsync(courier);
 
         return _mapper.Map<CourierDto>(courier);
-    }
-
-    // Delete a courier
-    public async Task<bool> DeleteAsync(Guid id)
-    {
-        return await _courierRepository.DeleteAsync(id);
     }
 
     // Helper method to validate image format

@@ -44,22 +44,23 @@ public class RentalRepository : IRentalRepository{
     public async Task<Rental?> GetByIdAsync(Guid id){
         return await _context.Rentals.FindAsync(id);
     }
-
-    /// <summary>
-    /// Search for all rentals
-    /// </summary>
-    /// <returns>List of all rentals</returns>
-    public async Task<IEnumerable<Rental>> GetAllAsync(){
-        return await _context.Rentals.ToListAsync();
-    }
     
     /// <summary>
     /// Search for active rentals by motorcycle ID
     /// </summary>
     /// <param name="motorcycleId">ID of the motorcycle</param>
     /// <returns>List of active rentals</returns>
-    public async Task<IEnumerable<Rental>> GetActiveRentalsByMotorcycleIdAsync(Guid motorcycleId){
+    public async Task<IEnumerable<Rental>> GetActiveRentalsByMotorcycleIdAsync(string motorcycleId){
         return await _context.Rentals.Where(r => r.MotorcycleId == motorcycleId && r.EndDate == null).ToListAsync();
+    }
+
+    /// <summary>
+    /// Search for active rentals by courier ID
+    /// </summary>
+    /// <param name="courierId">ID of the courier</param>
+    /// <returns>List of active rentals</returns>
+    public async Task<IEnumerable<Rental>> GetActiveRentalsByCourierIdAsync(string courierId){
+        return await _context.Rentals.Where(r => r.CourierId == courierId && r.EndDate == null).ToListAsync();
     }
 
     /// <summary>
