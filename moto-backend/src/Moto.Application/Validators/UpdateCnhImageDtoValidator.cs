@@ -1,6 +1,7 @@
-// UpdateCnhImageDtoValidator - Validador para atualização da imagem da CNH
-// Validações: formato PNG ou BMP, URL válida
+// UpdateCnhImageDtoValidator - Validator for updating CNH image
+// Validations: PNG or BMP format, valid URL
 using FluentValidation;
+using Moto.Application.DTOs.Couriers;
 
 namespace Moto.Application.Validators;
 
@@ -10,11 +11,11 @@ public class UpdateCnhImageDtoValidator : AbstractValidator<UpdateCnhImageDto>
     {
         RuleFor(x => x.CnhImageUrl)
             .NotEmpty()
-            .WithMessage("A URL da imagem da CNH é obrigatória")
+            .WithMessage("CNH image URL is required")
             .Must(BeValidImageUrl)
-            .WithMessage("A URL da imagem deve ser válida")
+            .WithMessage("Image URL must be valid")
             .Must(BeValidImageFormat)
-            .WithMessage("A imagem deve estar no formato PNG ou BMP");
+            .WithMessage("Image must be in PNG or BMP format");
     }
 
     private static bool BeValidImageUrl(string? url)
@@ -34,10 +35,4 @@ public class UpdateCnhImageDtoValidator : AbstractValidator<UpdateCnhImageDto>
         var lowerUrl = url.ToLowerInvariant();
         return lowerUrl.EndsWith(".png") || lowerUrl.EndsWith(".bmp");
     }
-}
-
-// DTO para atualização da imagem da CNH
-public class UpdateCnhImageDto
-{
-    public required string CnhImageUrl { get; set; }
 }

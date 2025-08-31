@@ -65,6 +65,11 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
             entity.HasIndex(e => e.CnhNumber)
                   .IsUnique()
                   .HasDatabaseName("IX_Couriers_CnhNumber_Unique");
+            
+            entity.Property(e => e.BirthDate)
+                  .HasConversion(
+                      v => DateTime.SpecifyKind(v, DateTimeKind.Utc),
+                      v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
         });
 
         // Configure Rental entity with DateTime conversions
@@ -84,15 +89,6 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
                   .HasConversion(
                       v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v,
                       v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
-        });
-
-        // Configure Courier entity with DateTime conversion
-        modelBuilder.Entity<Courier>(entity =>
-        {
-            entity.Property(e => e.BirthDate)
-                  .HasConversion(
-                      v => DateTime.SpecifyKind(v, DateTimeKind.Utc),
-                      v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
         });
 
         // Configure MotorcycleEvent entity

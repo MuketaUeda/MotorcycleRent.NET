@@ -1,3 +1,5 @@
+// MotorcycleEventValidator - Validator for motorcycle events
+// Validations: required fields, valid formats, reasonable ranges, optional data
 using FluentValidation;
 using Moto.Domain.Entities;
 
@@ -45,7 +47,7 @@ public class MotorcycleEventValidator : AbstractValidator<MotorcycleEvent>
             .MaximumLength(50)
             .WithMessage("MotorcyclePlate cannot exceed 50 characters")
             .Matches(@"^[A-Z]{3}[0-9][0-9A-Z][0-9]{2}$")
-            .WithMessage("MotorcyclePlate must be in Brazilian format (e.g., ABC1234 or ABC1D23)");
+            .WithMessage("MotorcyclePlate must be in Mercosul format (e.g., ABC1D23)");
 
         RuleFor(x => x.AdditionalData)
             .MaximumLength(1000)

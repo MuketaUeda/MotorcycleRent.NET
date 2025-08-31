@@ -12,10 +12,10 @@ public class CreateMotorcycleDtoValidator : AbstractValidator<CreateMotorcycleDt
         RuleFor(x => x.Plate)
             .NotEmpty()
             .WithMessage("License plate is required")
-            .Length(7, 8)
-            .WithMessage("License plate must have between 7 and 8 characters")
-            .Matches(@"^[A-Z]{3}[0-9][0-9A-Z][0-9]{2}$|^[A-Z]{3}[0-9]{4}$")
-            .WithMessage("License plate must be in valid format (e.g., ABC1234 or ABC1D23)");
+            .Length(7)
+            .WithMessage("License plate must have 7 characters")
+            .Matches(@"^[A-Z]{3}[0-9][0-9A-Z][0-9]{2}$")
+            .WithMessage("License plate must be in Mercosul format (e.g., ABC1D23)");
 
         RuleFor(x => x.Year)
             .NotEmpty()

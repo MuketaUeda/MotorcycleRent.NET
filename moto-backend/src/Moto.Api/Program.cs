@@ -1,16 +1,10 @@
 using Moto.Infrastructure;
 using Moto.Application;
-using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
-builder.Services.AddControllers()
-    .AddFluentValidation(fv => 
-    {
-        fv.DisableDataAnnotationsValidation = true;
-        fv.RegisterValidatorsFromAssemblyContaining<Moto.Application.Validators.CreateMotorcycleDtoValidator>();
-    });
+builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => 
@@ -19,7 +13,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "Motorcycle Rent API",
         Version = "v1",
-        Description = "API para sistema de aluguel de motos"
+        Description = "API for motorcycle rental system"
     });
 });
 
@@ -29,8 +23,8 @@ builder.Services.AddInfrastructure(builder.Configuration);
 // Add Application services
 builder.Services.AddApplication();
 
-// Add AutoMapper for API layer
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
+// Add AutoMapper for both API and Application layers
+builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(Moto.Application.Mappings.MappingProfile).Assembly);
 
 // Add CORS
 builder.Services.AddCors(options =>

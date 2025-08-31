@@ -1,8 +1,10 @@
-// DependencyInjection - Configuração da injeção de dependência da aplicação
-// Registra serviços da camada de aplicação
+// DependencyInjection - Application layer dependency injection configuration
+// Registers application services and validators
 using Microsoft.Extensions.DependencyInjection;
 using Moto.Application.Services;
 using Moto.Application.Interfaces;
+using Moto.Application.Validators;
+using FluentValidation;
 
 namespace Moto.Application;
 
@@ -10,21 +12,13 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddScoped<IMotorcycleService>(provider =>
-        {
-            var motorcycleRepository = provider.GetRequiredService<Moto.Domain.Interfaces.IMotorcycleRepository>();
-            var rentalRepository = provider.GetRequiredService<Moto.Domain.Interfaces.IRentalRepository>();
-            var mapper = provider.GetRequiredService<AutoMapper.IMapper>();
-            var eventPublisher = provider.GetService<IEventPublisher>();
-            
-            return new MotorcycleService(motorcycleRepository, rentalRepository, mapper, eventPublisher);
-        });
-        
+        // Register Application Services
+        services.AddScoped<IMotorcycleService, MotorcycleService>();
         services.AddScoped<ICourierService, CourierService>();
         services.AddScoped<IRentalService, RentalService>();
         
-        // Add AutoMapper
-        services.AddAutoMapper(typeof(DependencyInjection).Assembly);
+        // Register FluentValidation Validators
+        services.AddValidatorsFromAssemblyContaining<CreateMotorcycleDtoValidator>();
         
         return services;
     }

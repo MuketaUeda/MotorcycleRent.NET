@@ -1,3 +1,5 @@
+// MotorcycleCreatedEventDtoValidator - Validator for motorcycle created events
+// Validations: required fields, valid formats, reasonable ranges
 using FluentValidation;
 using Moto.Application.DTOs.Events;
 
@@ -23,7 +25,7 @@ public class MotorcycleCreatedEventDtoValidator : AbstractValidator<MotorcycleCr
             .MaximumLength(50)
             .WithMessage("Plate cannot exceed 50 characters")
             .Matches(@"^[A-Z]{3}[0-9][0-9A-Z][0-9]{2}$")
-            .WithMessage("Plate must be in Brazilian format (e.g., ABC1234 or ABC1D23)");
+            .WithMessage("Plate must be in Mercosul format (e.g., ABC1D23)");
 
         RuleFor(x => x.Year)
             .GreaterThan(1900)

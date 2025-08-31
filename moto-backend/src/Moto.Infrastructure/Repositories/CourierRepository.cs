@@ -68,15 +68,6 @@ public class CourierRepository : ICourierRepository
     }
 
     /// <summary>
-    /// Obtém todos os entregadores
-    /// </summary>
-    /// <returns>Lista de entregadores</returns>
-    public async Task<IReadOnlyList<Courier>> GetAllAsync()
-    {
-        return await _context.Couriers.ToListAsync();
-    }
-
-    /// <summary>
     /// Atualiza um entregador
     /// </summary>
     /// <param name="courier">Entregador a ser atualizado</param>
@@ -86,22 +77,5 @@ public class CourierRepository : ICourierRepository
         _context.Couriers.Update(courier);
         await _context.SaveChangesAsync();
         return courier;
-    }
-
-    /// <summary>
-    /// Remove um entregador
-    /// </summary>
-    /// <param name="id">ID do entregador a ser removido</param>
-    /// <returns>True se o entregador foi removido, false caso contrário</returns>
-    public async Task<bool> DeleteAsync(string id)
-    {
-        var courier = await GetByIdAsync(id);
-        if (courier != null)
-        {
-            _context.Couriers.Remove(courier);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-        return false;
     }
 }

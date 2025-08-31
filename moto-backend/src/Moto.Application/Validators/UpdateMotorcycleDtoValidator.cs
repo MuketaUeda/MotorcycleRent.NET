@@ -1,5 +1,5 @@
-// UpdateMotorcycleDtoValidator - Validador para atualização de motos na Application layer
-// Validações: apenas placa pode ser alterada, formato válido
+// UpdateMotorcycleDtoValidator - Validator for updating motorcycles in Application layer
+// Validations: only plate can be changed, valid format
 using FluentValidation;
 using Moto.Application.DTOs.Motorcycles;
 
@@ -11,10 +11,10 @@ public class UpdateMotorcycleDtoValidator : AbstractValidator<UpdateMotorcycleDt
     {
         RuleFor(x => x.Plate)
             .NotEmpty()
-            .WithMessage("A placa é obrigatória")
-            .Length(7, 8)
-            .WithMessage("A placa deve ter entre 7 e 8 caracteres")
-            .Matches(@"^[A-Z]{3}[0-9][0-9A-Z][0-9]{2}$|^[A-Z]{3}[0-9]{4}$")
-            .WithMessage("A placa deve estar no formato válido (ex: ABC1234 ou ABC1D23)");
+            .WithMessage("License plate is required")
+            .Length(7)
+            .WithMessage("License plate must have 7 characters")
+            .Matches(@"^[A-Z]{3}[0-9][0-9A-Z][0-9]{2}$")
+            .WithMessage("License plate must be in Mercosul format (e.g., ABC1D23)");
     }
 }

@@ -1,42 +1,21 @@
+// IRentalRepository - Interface of the rental repository
+// Define contracts for rental persistence operations
 using Moto.Domain.Entities;
 
 namespace Moto.Domain.Interfaces;
 
 public interface IRentalRepository
 {
-    /// <summary>
-    /// Adiciona uma nova locação
-    /// </summary>
-    /// <param name="rental">Locação a ser adicionada</param>
-    /// <returns>Locação adicionada</returns>
+    /// Add a rental to the database
     Task<Rental> AddAsync(Rental rental);
 
-    /// <summary>       
-    /// Obtém uma locação pelo ID
-    /// </summary>
-    /// <param name="id">ID da locação</param>
-    /// <returns>Locação encontrada ou null se não encontrada</returns>
+    /// Search for a rental by ID
     Task<Rental?> GetByIdAsync(Guid id);
 
-    /// <summary>
-    /// Obtém todas as locações ativas de uma motocicleta
-    /// </summary>
-    /// <param name="motorcycleId">ID da motocicleta</param>
-    /// <returns>Lista de locações ativas</returns>
+    /// Search for all active rentals by motorcycle ID
     Task<IEnumerable<Rental>> GetActiveRentalsByMotorcycleIdAsync(string motorcycleId);
 
-    /// <summary>
-    /// Obtém todas as locações ativas de um entregador
-    /// </summary>
-    /// <param name="courierId">ID do entregador</param>
-    /// <returns>Lista de locações ativas</returns>
-    Task<IEnumerable<Rental>> GetActiveRentalsByCourierIdAsync(string courierId);
-
-    /// <summary>
-    /// Atualiza uma locação
-    /// </summary>
-    /// <param name="rental">Locação a ser atualizada</param>
-    /// <returns>Locção atualizada</returns>
+    /// Update a rental
     Task<Rental> UpdateAsync(Rental rental);
 }
 
