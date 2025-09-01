@@ -17,22 +17,43 @@ public class Worker : BackgroundService
     {
         _logger.LogInformation("Starting Motorcycle Event Worker");
         
-        try
+        var maxRetries = 10;
+        var retryDelay = TimeSpan.FromSeconds(5);
+        var currentRetry = 0;
+        
+        while (currentRetry < maxRetries && !stoppingToken.IsCancellationRequested)
         {
-            _motorcycleCreatedHandler.StartConsuming();
-            
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                await Task.Delay(1000, stoppingToken);
+                _logger.LogInformation("Attempting to start consumer (attempt {CurrentRetry}/{MaxRetries})", currentRetry + 1, maxRetries);
+                _motorcycleCreatedHandler.StartConsuming();
+                
+                _logger.LogInformation("Successfully started consuming motorcycle events");
+                
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    await Task.Delay(1000, stoppingToken);
+                }
+                break;
+            }
+            catch (Exception ex)
+            {
+                currentRetry++;
+                _logger.LogWarning(ex, "Failed to start consumer (attempt {CurrentRetry}/{MaxRetries})", currentRetry, maxRetries);
+                
+                if (currentRetry < maxRetries)
+                {
+                    _logger.LogInformation("Retrying in {RetryDelay} seconds...", retryDelay.TotalSeconds);
+                    await Task.Delay(retryDelay, stoppingToken);
+                }
+                else
+                {
+                    _logger.LogError(ex, "Failed to start consumer after {MaxRetries} attempts", maxRetries);
+                    throw;
+                }
             }
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error in Motorcycle Event Worker");
-        }
-        finally
-        {
-            _motorcycleCreatedHandler.Dispose();
-        }
+        
+        _motorcycleCreatedHandler.Dispose();
     }
 }

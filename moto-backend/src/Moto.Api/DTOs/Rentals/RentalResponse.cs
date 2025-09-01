@@ -1,4 +1,4 @@
-// RentalResponse - DTO for complete details of rentals
+// RentalResponse - DTO for complete details of rentals in API layer
 // Properties: Id, Motorcycle, Courier, PlanType, StartDate, EndDate, TotalCost, FineAmount, AdditionalDaysCost, AdditionalDays
 using Moto.Domain.Enums;
 

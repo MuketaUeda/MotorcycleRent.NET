@@ -1,23 +1,14 @@
-// ICourierService - Interface do serviço de entregadores
-// Define contratos para operações de negócio de entregadores
+// ICourierService - Interface of the courier service
+// Define contracts for courier business operations
 using Moto.Application.DTOs.Couriers;
 
 namespace Moto.Application.Interfaces;
 
 public interface ICourierService
 {
-    /// <summary>
-    /// Cria um novo entregador
-    /// </summary>
-    /// <param name="request">Dados do entregador a ser criado</param>
-    /// <returns>Entregador criado</returns>
+    /// Create a new courier
     Task<CourierDto> CreateAsync(CreateCourierDto request);
 
-    /// <summary>
-    /// Atualiza a foto da CNH de um entregador
-    /// </summary>
-    /// <param name="id">ID do entregador</param>
-    /// <param name="request">Dados da foto da CNH</param>
-    /// <returns>Entregador atualizado</returns>
+    /// Update the CNH image of a courier
     Task<CourierDto> UpdateCnhImageAsync(string id, UpdateCnhImageDto request);
 }

@@ -8,6 +8,7 @@ using Moto.Application.Validators;
 using Moto.Application.DTOs.Rentals;
 using FluentValidation;
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 
 namespace Moto.Application.Services;
 
@@ -20,6 +21,7 @@ public class RentalService : IRentalService
     private readonly IValidator<CreateRentalDto> _createRentalValidator;
     private readonly IValidator<ReturnRentalDto> _returnRentalValidator;
     private readonly IMapper _mapper;
+    private readonly ILogger<RentalService> _logger;
 
     /// Constructor for RentalService
     public RentalService(
@@ -28,7 +30,8 @@ public class RentalService : IRentalService
         ICourierRepository courierRepository,
         IValidator<CreateRentalDto> createRentalValidator,
         IValidator<ReturnRentalDto> returnRentalValidator,
-        IMapper mapper
+        IMapper mapper,
+        ILogger<RentalService> logger
     )
     {
         _rentalRepository = rentalRepository;
@@ -37,15 +40,21 @@ public class RentalService : IRentalService
         _createRentalValidator = createRentalValidator;
         _returnRentalValidator = returnRentalValidator;
         _mapper = mapper;
+        _logger = logger;
     }
 
     /// Creates a new rental
     public async Task<RentalDto> CreateAsync(CreateRentalDto createRentalDto)
     {
+        _logger.LogInformation("Creating rental - Motorcycle: {MotorcycleId}, Courier: {CourierId}", 
+            createRentalDto.MotorcycleId, createRentalDto.CourierId);
+        
         // Validate input
         var validationResult = await _createRentalValidator.ValidateAsync(createRentalDto);
         if (!validationResult.IsValid)
         {
+            _logger.LogWarning("Rental creation failed - Validation errors: {Errors}", 
+                string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
             throw new ValidationException(validationResult.Errors);
         }
 
@@ -53,6 +62,7 @@ public class RentalService : IRentalService
         var motorcycle = await _motorcycleRepository.GetByIdAsync(createRentalDto.MotorcycleId);
         if (motorcycle == null)
         {
+            _logger.LogWarning("Rental creation failed - Motorcycle not found: {MotorcycleId}", createRentalDto.MotorcycleId);
             throw new InvalidOperationException("Motorcycle not found.");
         }
 
@@ -60,12 +70,15 @@ public class RentalService : IRentalService
         var courier = await _courierRepository.GetByIdAsync(createRentalDto.CourierId);
         if (courier == null)
         {
+            _logger.LogWarning("Rental creation failed - Courier not found: {CourierId}", createRentalDto.CourierId);
             throw new InvalidOperationException("Courier not found.");
         }
 
         // Business rule: Only couriers with category A can rent motorcycles
         if (courier.CnhType != CnhType.A && courier.CnhType != CnhType.AB)
         {
+            _logger.LogWarning("Rental creation failed - Invalid CNH type: {CourierId}, Type: {CnhType}", 
+                createRentalDto.CourierId, courier.CnhType);
             throw new InvalidOperationException("Only couriers with category A license can rent motorcycles.");
         }
 
@@ -73,6 +86,7 @@ public class RentalService : IRentalService
         var activeRentals = await _rentalRepository.GetActiveRentalsByMotorcycleIdAsync(createRentalDto.MotorcycleId);
         if (activeRentals.Any())
         {
+            _logger.LogWarning("Rental creation failed - Motorcycle not available: {MotorcycleId}", createRentalDto.MotorcycleId);
             throw new InvalidOperationException("Motorcycle is not available for rental.");
         }
 
@@ -98,6 +112,8 @@ public class RentalService : IRentalService
 
         // Save to database
         var createdRental = await _rentalRepository.AddAsync(rental);
+        _logger.LogInformation("Rental created successfully: {RentalId}, Motorcycle: {MotorcycleId}, Courier: {CourierId}", 
+            createdRental.Id, createdRental.MotorcycleId, createdRental.CourierId);
 
         // Map to DTO and return
         return _mapper.Map<RentalDto>(createdRental);

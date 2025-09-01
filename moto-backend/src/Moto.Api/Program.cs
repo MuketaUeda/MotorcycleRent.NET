@@ -1,58 +1,66 @@
 using Moto.Infrastructure;
 using Moto.Application;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace Moto.Api;
 
-// Add services to the container
-builder.Services.AddControllers();
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c => 
+public partial class Program
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    public static void Main(string[] args)
     {
-        Title = "Motorcycle Rent API",
-        Version = "v1",
-        Description = "API for motorcycle rental system"
-    });
-});
+        var builder = WebApplication.CreateBuilder(args);
 
-// Add Infrastructure services
-builder.Services.AddInfrastructure(builder.Configuration);
+        // Register services to the container
+        builder.Services.AddControllers();
 
-// Add Application services
-builder.Services.AddApplication();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen(c => 
+        {
+            c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+            {
+                Title = "Motorcycle Rent API",
+                Version = "v1",
+                Description = "API for motorcycle rental system"
+            });
+        });
 
-// Add AutoMapper for both API and Application layers
-builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(Moto.Application.Mappings.MappingProfile).Assembly);
+        // Register Infrastructure services
+        builder.Services.AddInfrastructure(builder.Configuration);
 
-// Add CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-});
+        // Add Application services
+        builder.Services.AddApplication();
 
-var app = builder.Build();
+        // Register AutoMapper for both API and Application layers
+        builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(Moto.Application.Mappings.MappingProfile).Assembly);
 
-// Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Motorcycle Rent API v1");
-        c.RoutePrefix = string.Empty; // Serve Swagger UI at root
-    });
+        // Add CORS policy
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAll", policy =>
+            {
+                policy.AllowAnyOrigin()
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
+            });
+        });
+
+        var app = builder.Build();
+
+        // Configure the HTTP request pipeline
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Motorcycle Rent API v1");
+                c.RoutePrefix = string.Empty; // Serve Swagger UI at root path
+            });
+        }
+
+        app.UseHttpsRedirection();
+        app.UseCors("AllowAll");
+        app.UseAuthorization();
+        app.MapControllers();
+
+        app.Run();
+    }
 }
-
-app.UseHttpsRedirection();
-app.UseCors("AllowAll");
-app.UseAuthorization();
-app.MapControllers();
-
-app.Run();

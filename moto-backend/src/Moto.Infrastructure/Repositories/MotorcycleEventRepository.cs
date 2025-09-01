@@ -1,3 +1,5 @@
+// MotorcycleEventRepository - Implement repository for motorcycle events
+// Implement IMotorcycleEventRepository using Entity Framework
 using Microsoft.EntityFrameworkCore;
 using Moto.Domain.Entities;
 using Moto.Domain.Interfaces;
@@ -14,6 +16,7 @@ public class MotorcycleEventRepository : IMotorcycleEventRepository
         _context = context;
     }
 
+    /// Add a motorcycle event to the database
     public async Task<MotorcycleEvent> AddAsync(MotorcycleEvent motorcycleEvent)
     {
         _context.MotorcycleEvents.Add(motorcycleEvent);
@@ -21,6 +24,7 @@ public class MotorcycleEventRepository : IMotorcycleEventRepository
         return motorcycleEvent;
     }
 
+    /// Get all motorcycle events
     public async Task<IEnumerable<MotorcycleEvent>> GetAllAsync()
     {
         return await _context.MotorcycleEvents
@@ -28,6 +32,7 @@ public class MotorcycleEventRepository : IMotorcycleEventRepository
             .ToListAsync();
     }
 
+    /// Get motorcycle events by year
     public async Task<IEnumerable<MotorcycleEvent>> GetByYearAsync(int year)
     {
         return await _context.MotorcycleEvents

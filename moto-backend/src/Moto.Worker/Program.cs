@@ -13,6 +13,9 @@ builder.Services.AddInfrastructure(builder.Configuration);
 // Add Application services
 builder.Services.AddApplication();
 
+// Add AutoMapper
+builder.Services.AddAutoMapper(typeof(Moto.Application.Mappings.MappingProfile).Assembly);
+
 // Add FluentValidation validators
 builder.Services.AddValidatorsFromAssemblyContaining<CreateRentalDtoValidator>();
 

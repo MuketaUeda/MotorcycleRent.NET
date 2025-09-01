@@ -13,6 +13,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - moto-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U moto_user -d moto_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # RabbitMQ Message Broker
   rabbitmq:
@@ -28,6 +33,56 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - moto-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API Service
+  moto-api:
+    build:
+      context: ./src
+      dockerfile: Moto.Api/Dockerfile
+    container_name: moto-api
+    ports:
+      - "5000:8080"
+      - "5001:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=moto_db;Username=moto_user;Password=moto_password
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=moto_user
+      - RabbitMQ__Password=moto_password
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - moto-network
+    restart: unless-stopped
+
+  # Worker Service
+  moto-worker:
+    build:
+      context: ./src
+      dockerfile: Moto.Worker/Dockerfile
+    container_name: moto-worker
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=moto_db;Username=moto_user;Password=moto_password
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=moto_user
+      - RabbitMQ__Password=moto_password
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - moto-network
+    restart: unless-stopped
 
 volumes:
   postgres_data:

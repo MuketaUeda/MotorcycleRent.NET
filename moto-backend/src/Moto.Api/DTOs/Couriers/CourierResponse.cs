@@ -1,5 +1,7 @@
 // CourierResponse - DTO for complete details of couriers
-// Properties: Id, Name, CNPJ, BirthDate, LicenseNumber, LicenseType, LicenseImage
+// Properties: Id, Name, CNPJ, BirthDate, CnhNumber, CnhType, CnhImageUrl
+using Moto.Domain.Enums;
+
 namespace Moto.Api.DTOs.Couriers;
 
 public class CourierResponse
@@ -8,7 +10,7 @@ public class CourierResponse
     public required string Name { get; set; }
     public required string Cnpj { get; set; }
     public required DateTime BirthDate { get; set; }
-    public required string LicenseNumber { get; set; }
-    public required string LicenseType { get; set; }
-    public string? LicenseImage { get; set; }
+    public required string CnhNumber { get; set; }
+    public required CnhType CnhType { get; set; }
+    public string? CnhImageUrl { get; set; }
 }

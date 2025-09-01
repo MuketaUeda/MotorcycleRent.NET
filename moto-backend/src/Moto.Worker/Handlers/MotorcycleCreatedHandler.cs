@@ -18,8 +18,9 @@ public class MotorcycleCreatedHandler
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<MotorcycleCreatedHandler> _logger;
-    private readonly IConnection _connection;
-    private readonly IModel _channel;
+    private readonly IConfiguration _configuration;
+    private IConnection? _connection;
+    private IModel? _channel;
     private const string ExchangeName = "motorcycle_events";
     private const string QueueName = "motorcycle_created_queue";
     private const string RoutingKey = "motorcycle.created";
@@ -28,13 +29,19 @@ public class MotorcycleCreatedHandler
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
+        _configuration = configuration;
+    }
+
+    private void InitializeConnection()
+    {
+        if (_connection != null && _channel != null) return;
 
         var factory = new ConnectionFactory
         {
-            HostName = configuration["RabbitMQ:Host"] ?? "localhost",
-            Port = int.Parse(configuration["RabbitMQ:Port"] ?? "5672"),
-            UserName = configuration["RabbitMQ:Username"] ?? "guest",
-            Password = configuration["RabbitMQ:Password"] ?? "guest"
+            HostName = _configuration["RabbitMQ:Host"] ?? "localhost",
+            Port = int.Parse(_configuration["RabbitMQ:Port"] ?? "5672"),
+            UserName = _configuration["RabbitMQ:Username"] ?? "guest",
+            Password = _configuration["RabbitMQ:Password"] ?? "guest"
         };
 
         _connection = factory.CreateConnection();
@@ -56,7 +63,9 @@ public class MotorcycleCreatedHandler
         {
             _logger.LogInformation("Starting to consume from queue: {QueueName}", QueueName);
             
-            var consumer = new EventingBasicConsumer(_channel);
+            InitializeConnection();
+            
+            var consumer = new EventingBasicConsumer(_channel!);
             
             consumer.Received += async (model, ea) =>
             {
@@ -73,16 +82,16 @@ public class MotorcycleCreatedHandler
                         await ProcessMotorcycleCreatedEvent(eventDto);
                     }
                     
-                    _channel.BasicAck(ea.DeliveryTag, false);
+                    _channel!.BasicAck(ea.DeliveryTag, false);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error processing motorcycle created event");
-                    _channel.BasicNack(ea.DeliveryTag, false, true);
+                    _channel!.BasicNack(ea.DeliveryTag, false, true);
                 }
             };
 
-            _channel.BasicConsume(queue: QueueName, autoAck: false, consumer: consumer);
+            _channel!.BasicConsume(queue: QueueName, autoAck: false, consumer: consumer);
             _logger.LogInformation("Successfully started consuming motorcycle created events from queue: {QueueName}", QueueName);
         }
         catch (Exception ex)
@@ -113,7 +122,16 @@ public class MotorcycleCreatedHandler
         }
 
         using var scope = _serviceProvider.CreateScope();
+        var motorcycleRepository = scope.ServiceProvider.GetRequiredService<IMotorcycleRepository>();
         var motorcycleEventRepository = scope.ServiceProvider.GetRequiredService<IMotorcycleEventRepository>();
+
+        // Check if the motorcycle exists in the database before creating the event
+        var existingMotorcycle = await motorcycleRepository.GetByIdAsync(eventDto.Id);
+        if (existingMotorcycle == null)
+        {
+            _logger.LogWarning("Motorcycle with ID {MotorcycleId} not found in database. Skipping event creation.", eventDto.Id);
+            return;
+        }
 
         var motorcycleEvent = new MotorcycleEvent
         {

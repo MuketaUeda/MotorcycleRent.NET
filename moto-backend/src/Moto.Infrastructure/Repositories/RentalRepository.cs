@@ -12,15 +12,10 @@ public class RentalRepository : IRentalRepository{
    
     private readonly ApplicationDbContext _context;
 
-
-    /// RentalRepository - implement repository for rentals
-    /// implement IRentalRepository using Entity Framework
-
     public RentalRepository(ApplicationDbContext context){
         _context = context;
     }
 
-   
     /// Add a rental to the database
     public async Task<Rental> AddAsync(Rental rental){
         await _context.Rentals.AddAsync(rental);
@@ -39,7 +34,6 @@ public class RentalRepository : IRentalRepository{
     }
 
     /// Update a rental
-
     public async Task<Rental> UpdateAsync(Rental rental){
         _context.Rentals.Update(rental);
         await _context.SaveChangesAsync();
