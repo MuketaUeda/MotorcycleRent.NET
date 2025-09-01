@@ -28,6 +28,9 @@ RUN dotnet publish "Moto.Worker.csproj" -c Release -o /app/publish /p:UseAppHost
 FROM mcr.microsoft.com/dotnet/runtime:8.0 AS final
 WORKDIR /app
 
+# Configurar variáveis de ambiente
+ENV ASPNETCORE_ENVIRONMENT=Production
+
 # Copiar aplicação publicada
 COPY --from=publish /app/publish .
 

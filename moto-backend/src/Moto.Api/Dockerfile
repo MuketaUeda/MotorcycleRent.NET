@@ -34,13 +34,17 @@ RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 # Copiar aplicação publicada
 COPY --from=publish /app/publish .
 
-# Expor porta
-EXPOSE 80
+# Configurar variáveis de ambiente
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_URLS=http://+:8080;https://+:443
+
+# Expor portas (correspondem ao docker-compose)
+EXPOSE 8080
 EXPOSE 443
 
-# Health check
+# Health check (usando endpoint que existe)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/health || exit 1
+    CMD curl -f http://localhost:8080/swagger || exit 1
 
 # Comando de inicialização
 ENTRYPOINT ["dotnet", "Moto.Api.dll"]
