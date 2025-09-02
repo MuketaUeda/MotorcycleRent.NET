@@ -22,6 +22,7 @@ public class Rental
     [Required]
     public DateTime ExpectedEndDate { get; set; }
     
+    [Required]
     public DateTime? EndDate { get; set; }
     
     // Costs calculated

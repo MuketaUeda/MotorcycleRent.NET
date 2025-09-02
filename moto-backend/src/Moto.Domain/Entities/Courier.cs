@@ -21,7 +21,7 @@ public class Courier
     public DateTime BirthDate { get; set; }
     
     [Required]
-    [StringLength(11)]
+    [StringLength(9)]
     public string CnhNumber { get; set; } = string.Empty;
     
     [Required]

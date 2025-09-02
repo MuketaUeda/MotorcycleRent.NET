@@ -9,7 +9,7 @@ public class Motorcycle
     public string Id { get; set; } = string.Empty;
     
     [Required]
-    [StringLength(50)]
+    [StringLength(7)]
     public string Plate { get; set; } = string.Empty;
     
     [Required]

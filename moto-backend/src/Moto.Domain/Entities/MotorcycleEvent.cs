@@ -25,7 +25,7 @@ public class MotorcycleEvent
     public string MotorcycleModel { get; set; } = string.Empty;
     
     [Required]
-    [StringLength(50)]
+    [StringLength(7)]
     public string MotorcyclePlate { get; set; } = string.Empty;
     
     public string? AdditionalData { get; set; }

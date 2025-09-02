@@ -35,9 +35,9 @@ public class CreateCourierDtoValidator : AbstractValidator<CreateCourierDto>
         RuleFor(x => x.CnhNumber)
             .NotEmpty()
             .WithMessage("CNH number is required")
-            .Length(11)
-            .WithMessage("CNH number must have 11 digits")
-            .Matches(@"^\d{11}$")
+            .Length(9)
+            .WithMessage("CNH number must have 9 digits")
+            .Matches(@"^\d{9}$")
             .WithMessage("CNH number must contain only numbers");
 
         RuleFor(x => x.CnhType)

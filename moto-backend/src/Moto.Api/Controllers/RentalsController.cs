@@ -1,5 +1,5 @@
-// RentalsController - Controller responsável por gerenciar operações de locação
-// Endpoints: Criar locação, finalizar locação, consultar valores
+// RentalsController - Controller responsible for managing rental operations
+// Endpoints: Create rental, finalize rental, query values
 
 using Microsoft.AspNetCore.Mvc;
 using Moto.Api.DTOs.Rentals;
@@ -22,11 +22,7 @@ public class RentalsController : ControllerBase
         _mapper = mapper;
     }
 
-    /// <summary>
-    /// Creates a new rental
-    /// </summary>
-    /// <param name="request">Rental creation data</param>
-    /// <returns>Created rental</returns>
+    /// Create a new rental
     [HttpPost]
     public async Task<IActionResult> CreateAsync([FromBody] CreateRentalRequest request)
     {
@@ -52,11 +48,7 @@ public class RentalsController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Gets a rental by ID
-    /// </summary>
-    /// <param name="id">Rental ID</param>
-    /// <returns>Found rental or 404 if not found</returns>
+    /// Get a rental by ID
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetByIdAsync(Guid id)
     {
@@ -73,12 +65,7 @@ public class RentalsController : ControllerBase
         return Ok(responseDto);
     }
 
-    /// <summary>
-    /// Finalizes a rental (return)
-    /// </summary>
-    /// <param name="id">Rental ID</param>
-    /// <param name="request">Return data</param>
-    /// <returns>Finalized rental with calculated costs</returns>
+    /// Finalize a rental (return)
     [HttpPut("{id:guid}/return")]
     public async Task<IActionResult> ReturnAsync(Guid id, [FromBody] ReturnRentalRequest request)
     {
