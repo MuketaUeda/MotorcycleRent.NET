@@ -49,6 +49,7 @@ public class MotorcycleService : IMotorcycleService
         // Validate input
         var validationResult = await _createMotorcycleValidator.ValidateAsync(request);
         if (!validationResult.IsValid)
+        
         {
             _logger.LogWarning("Motorcycle creation failed - Validation errors: {Errors}", 
                 string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
