@@ -15,8 +15,6 @@ public interface IMotorcycleRepository
     /// Search for a motorcycle by plate
     Task<Motorcycle?> GetByPlateAsync(string plate);
 
-    /// Search for all motorcycles
-    Task<IReadOnlyList<Motorcycle>> GetAllAsync();
 
     /// Search for motorcycles by plate filter
     Task<IReadOnlyList<Motorcycle>> GetByPlateFilterAsync(string? plateFilter);

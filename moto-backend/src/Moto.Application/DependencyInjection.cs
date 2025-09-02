@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moto.Application.Services;
 using Moto.Application.Interfaces;
 using Moto.Application.Validators;
+using Moto.Application.Mappings;
 using FluentValidation;
 
 namespace Moto.Application;
@@ -16,6 +17,9 @@ public static class DependencyInjection
         services.AddScoped<IMotorcycleService, MotorcycleService>();
         services.AddScoped<ICourierService, CourierService>();
         services.AddScoped<IRentalService, RentalService>();
+        
+        // Register AutoMapper
+        services.AddAutoMapper(typeof(MappingProfile).Assembly);
         
         // Register FluentValidation Validators
         services.AddValidatorsFromAssemblyContaining<CreateMotorcycleDtoValidator>();

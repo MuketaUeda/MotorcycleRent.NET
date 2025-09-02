@@ -32,10 +32,6 @@ public class MotorcycleRepository : IMotorcycleRepository{
         return await _context.Motorcycles.FirstOrDefaultAsync(m => m.Plate == plate);
     }
 
-    /// Search for all motorcycles
-    public async Task<IReadOnlyList<Motorcycle>> GetAllAsync(){
-        return await _context.Motorcycles.ToListAsync();
-    }
 
     /// Search for all and filtered motorcycles by plate
     public async Task<IReadOnlyList<Motorcycle>> GetByPlateFilterAsync(string? plateFilter)

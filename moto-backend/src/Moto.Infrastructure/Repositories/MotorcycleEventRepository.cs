@@ -23,21 +23,4 @@ public class MotorcycleEventRepository : IMotorcycleEventRepository
         await _context.SaveChangesAsync();
         return motorcycleEvent;
     }
-
-    /// Get all motorcycle events
-    public async Task<IEnumerable<MotorcycleEvent>> GetAllAsync()
-    {
-        return await _context.MotorcycleEvents
-            .OrderByDescending(e => e.EventDate)
-            .ToListAsync();
-    }
-
-    /// Get motorcycle events by year
-    public async Task<IEnumerable<MotorcycleEvent>> GetByYearAsync(int year)
-    {
-        return await _context.MotorcycleEvents
-            .Where(e => e.MotorcycleYear == year)
-            .OrderByDescending(e => e.EventDate)
-            .ToListAsync();
-    }
 }
