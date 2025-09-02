@@ -383,7 +383,6 @@ moto-backend/
 │   │   ├── 📁 Properties/         # Configurações de debug
 │   │   ├── 📄 Program.cs          # Configuração da aplicação
 │   │   ├── 📄 appsettings.json    # Configurações base
-│   │   ├── 📄 Moto.Api.http       # Coleção de requisições HTTP
 │   │   └── 🐳 Dockerfile          # Container da API
 │   │
 │   ├── ⚙️ Moto.Application/        # Camada de aplicação
@@ -398,7 +397,6 @@ moto-backend/
 │   │   ├── 📁 Entities/           # Entidades de domínio
 │   │   ├── 📁 Interfaces/         # Contratos dos repositórios
 │   │   ├── 📁 Enums/              # Enumerações
-│   │   ├── 📁 Exceptions/         # Exceções de domínio
 │   │   └── 📁 ValueObjects/       # Objetos de valor
 │   │
 │   ├── 🗄️ Moto.Infrastructure/    # Camada de infraestrutura
