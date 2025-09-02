@@ -20,8 +20,8 @@ public class CreateMotorcycleDtoValidator : AbstractValidator<CreateMotorcycleDt
         RuleFor(x => x.Year)
             .NotEmpty()
             .WithMessage("Year is required")
-            .InclusiveBetween(1900, DateTime.Now.Year + 1)
-            .WithMessage($"Year must be between 1900 and {DateTime.Now.Year + 1}");
+            .InclusiveBetween(1900, DateTime.Today.Year + 1)
+            .WithMessage($"Year must be between 1900 and {DateTime.Today.Year + 1}");
 
         RuleFor(x => x.Model)
             .NotEmpty()

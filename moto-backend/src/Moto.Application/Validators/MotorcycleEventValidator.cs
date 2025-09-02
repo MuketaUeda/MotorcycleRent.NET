@@ -32,7 +32,7 @@ public class MotorcycleEventValidator : AbstractValidator<MotorcycleEvent>
         RuleFor(x => x.MotorcycleYear)
             .GreaterThan(1900)
             .WithMessage("MotorcycleYear must be greater than 1900")
-            .LessThanOrEqualTo(DateTime.Now.Year + 1)
+            .LessThanOrEqualTo(DateTime.Today.Year + 1)
             .WithMessage("MotorcycleYear cannot be more than next year");
 
         RuleFor(x => x.MotorcycleModel)

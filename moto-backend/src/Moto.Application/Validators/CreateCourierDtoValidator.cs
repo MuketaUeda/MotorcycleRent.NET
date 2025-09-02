@@ -27,9 +27,9 @@ public class CreateCourierDtoValidator : AbstractValidator<CreateCourierDto>
         RuleFor(x => x.BirthDate)
             .NotEmpty()
             .WithMessage("Birth date is required")
-            .LessThan(DateTime.Now.AddYears(-18))
+            .LessThan(DateTime.Today.AddYears(-18))
             .WithMessage("Courier must be at least 18 years old")
-            .GreaterThan(DateTime.Now.AddYears(-100))
+            .GreaterThan(DateTime.Today.AddYears(-100))
             .WithMessage("Birth date cannot be too old");
 
         RuleFor(x => x.CnhNumber)

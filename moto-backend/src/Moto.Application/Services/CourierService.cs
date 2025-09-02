@@ -4,21 +4,32 @@ using Moto.Domain.Entities;
 using Moto.Domain.Interfaces;
 using Moto.Application.DTOs.Couriers;
 using Moto.Application.Interfaces;
+using Moto.Application.Validators;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
+using FluentValidation;
 
 namespace Moto.Application.Services;
 
 public class CourierService : ICourierService
 {
     private readonly ICourierRepository _courierRepository;
+    private readonly IValidator<CreateCourierDto> _createCourierValidator;
+    private readonly IValidator<UpdateCnhImageDto> _updateCnhImageValidator;
     private readonly IMapper _mapper;
     private readonly ILogger<CourierService> _logger;
 
     // Dependency injection
-    public CourierService(ICourierRepository courierRepository, IMapper mapper, ILogger<CourierService> logger)
+    public CourierService(
+        ICourierRepository courierRepository, 
+        IValidator<CreateCourierDto> createCourierValidator,
+        IValidator<UpdateCnhImageDto> updateCnhImageValidator,
+        IMapper mapper, 
+        ILogger<CourierService> logger)
     {
         _courierRepository = courierRepository;
+        _createCourierValidator = createCourierValidator;
+        _updateCnhImageValidator = updateCnhImageValidator;
         _mapper = mapper;
         _logger = logger;
     }
@@ -27,6 +38,15 @@ public class CourierService : ICourierService
     public async Task<CourierDto> CreateAsync(CreateCourierDto request)
     {
         _logger.LogInformation("Creating courier with ID: {Id}, CNPJ: {Cnpj}", request.Id, request.Cnpj);
+        
+        // Validate input
+        var validationResult = await _createCourierValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("Courier creation failed - Validation errors: {Errors}", 
+                string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+            throw new ValidationException(validationResult.Errors);
+        }
         
         // Check if a courier with the same ID already exists
         var existingCourierById = await _courierRepository.GetByIdAsync(request.Id);
@@ -65,20 +85,21 @@ public class CourierService : ICourierService
     {
         _logger.LogInformation("Updating CNH image for courier: {Id}", id);
         
+        // Validate input
+        var validationResult = await _updateCnhImageValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            _logger.LogWarning("CNH image update failed - Validation errors: {Errors}", 
+                string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+            throw new ValidationException(validationResult.Errors);
+        }
+        
         var courier = await _courierRepository.GetByIdAsync(id);
         if (courier == null)
         {
             _logger.LogWarning("Courier not found for CNH image update: {Id}", id);
             throw new InvalidOperationException("Courier not found.");
         }
-
-        // Validate image format (PNG or BMP)
-        if (!IsValidImageFormat(request.CnhImageUrl))
-        {
-            _logger.LogWarning("Invalid image format for courier: {Id}, URL: {Url}", id, request.CnhImageUrl);
-            throw new InvalidOperationException("Image must be in PNG or BMP format.");
-        }
-
         // Update only the CNH image
         courier.CnhImageUrl = request.CnhImageUrl;
 
@@ -86,15 +107,5 @@ public class CourierService : ICourierService
         _logger.LogInformation("CNH image updated successfully for courier: {Id}", id);
 
         return _mapper.Map<CourierDto>(courier);
-    }
-
-    // Helper method to validate image format
-    private static bool IsValidImageFormat(string imageUrl)
-    {
-        if (string.IsNullOrEmpty(imageUrl))
-            return false;
-
-        var lowerUrl = imageUrl.ToLowerInvariant();
-        return lowerUrl.EndsWith(".png") || lowerUrl.EndsWith(".bmp");
     }
 }

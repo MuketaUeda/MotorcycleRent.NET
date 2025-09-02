@@ -6,6 +6,7 @@ using Moto.Api.DTOs.Couriers;
 using Moto.Application.Interfaces;
 using Moto.Application.DTOs.Couriers;
 using AutoMapper;
+using FluentValidation;
 
 namespace Moto.Api.Controllers;
 
@@ -36,11 +37,15 @@ public class CouriersController : ControllerBase
             // Map from Application DTO to API DTO
             var responseDto = _mapper.Map<CourierResponse>(result);
 
-            return Created($"/api/couriers/{responseDto.Id}", responseDto);
+            return Created($"/api/couriers/{responseDto.Id}", responseDto); //status code 201
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(ex.Message); //status code 400
+        }
+        catch (FluentValidation.ValidationException ex)
+        {
+            return BadRequest(ex.Message); //status code 400
         }
     }
 
@@ -58,11 +63,15 @@ public class CouriersController : ControllerBase
             // Map from Application DTO to API DTO
             var responseDto = _mapper.Map<CourierResponse>(result);
 
-            return Ok(responseDto);
+            return Ok(responseDto); //status code 200
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(ex.Message); //status code 400
+        }
+        catch (FluentValidation.ValidationException ex)
+        {
+            return BadRequest(ex.Message); //status code 400
         }
     }
 }

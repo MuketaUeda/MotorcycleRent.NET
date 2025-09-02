@@ -2,6 +2,7 @@
 // Tests business logic, validations and use cases
 using AutoMapper;
 using FluentAssertions;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Moto.Application.DTOs.Motorcycles;
@@ -18,6 +19,8 @@ public class MotorcycleServiceTests
 {
     private readonly Mock<IMotorcycleRepository> _mockMotorcycleRepository;
     private readonly Mock<IRentalRepository> _mockRentalRepository;
+    private readonly Mock<IValidator<CreateMotorcycleDto>> _mockCreateMotorcycleValidator;
+    private readonly Mock<IValidator<UpdateMotorcycleDto>> _mockUpdateMotorcycleValidator;
     private readonly Mock<IMapper> _mockMapper;
     private readonly Mock<ILogger<MotorcycleService>> _mockLogger;
     private readonly Mock<IEventPublisher> _mockEventPublisher;
@@ -27,6 +30,8 @@ public class MotorcycleServiceTests
     {
         _mockMotorcycleRepository = new Mock<IMotorcycleRepository>();
         _mockRentalRepository = new Mock<IRentalRepository>();
+        _mockCreateMotorcycleValidator = new Mock<IValidator<CreateMotorcycleDto>>();
+        _mockUpdateMotorcycleValidator = new Mock<IValidator<UpdateMotorcycleDto>>();
         _mockMapper = new Mock<IMapper>();
         _mockLogger = new Mock<ILogger<MotorcycleService>>();
         _mockEventPublisher = new Mock<IEventPublisher>();
@@ -34,6 +39,8 @@ public class MotorcycleServiceTests
         _service = new MotorcycleService(
             _mockMotorcycleRepository.Object,
             _mockRentalRepository.Object,
+            _mockCreateMotorcycleValidator.Object,
+            _mockUpdateMotorcycleValidator.Object,
             _mockMapper.Object,
             _mockLogger.Object,
             _mockEventPublisher.Object);
@@ -81,6 +88,11 @@ public class MotorcycleServiceTests
         _mockMotorcycleRepository.Setup(x => x.GetByPlateAsync(request.Plate))
             .ReturnsAsync((Motorcycle?)null);
 
+        // Setup validator to return success
+        var validationResult = new FluentValidation.Results.ValidationResult();
+        _mockCreateMotorcycleValidator.Setup(x => x.ValidateAsync(request, default))
+            .ReturnsAsync(validationResult);
+
         _mockMapper.Setup(x => x.Map<Motorcycle>(request))
             .Returns(motorcycle);
 
@@ -127,6 +139,11 @@ public class MotorcycleServiceTests
             Model = "Yamaha YBR 125"
         };
 
+        // Setup validator to return success (validation passes)
+        var validationResult = new FluentValidation.Results.ValidationResult();
+        _mockCreateMotorcycleValidator.Setup(x => x.ValidateAsync(request, default))
+            .ReturnsAsync(validationResult);
+
         _mockMotorcycleRepository.Setup(x => x.GetByIdAsync(request.Id))
             .ReturnsAsync(existingMotorcycle);
 
@@ -157,6 +174,11 @@ public class MotorcycleServiceTests
             Year = 2023,
             Model = "Yamaha YBR 125"
         };
+
+        // Setup validator to return success (validation passes)
+        var validationResult = new FluentValidation.Results.ValidationResult();
+        _mockCreateMotorcycleValidator.Setup(x => x.ValidateAsync(request, default))
+            .ReturnsAsync(validationResult);
 
         _mockMotorcycleRepository.Setup(x => x.GetByIdAsync(request.Id))
             .ReturnsAsync((Motorcycle?)null);
@@ -322,6 +344,11 @@ public class MotorcycleServiceTests
             Model = "Honda CG 160"
         };
 
+        // Setup validator to return success
+        var validationResult = new FluentValidation.Results.ValidationResult();
+        _mockUpdateMotorcycleValidator.Setup(x => x.ValidateAsync(request, default))
+            .ReturnsAsync(validationResult);
+
         _mockMotorcycleRepository.Setup(x => x.GetByIdAsync(id))
             .ReturnsAsync(existingMotorcycle);
 
@@ -352,6 +379,11 @@ public class MotorcycleServiceTests
         {
             Plate = "XYZ5678"
         };
+
+        // Setup validator to return success
+        var validationResult = new FluentValidation.Results.ValidationResult();
+        _mockUpdateMotorcycleValidator.Setup(x => x.ValidateAsync(request, default))
+            .ReturnsAsync(validationResult);
 
         _mockMotorcycleRepository.Setup(x => x.GetByIdAsync(id))
             .ReturnsAsync((Motorcycle?)null);
@@ -389,6 +421,11 @@ public class MotorcycleServiceTests
             Year = 2023,
             Model = "Yamaha YBR 125"
         };
+
+        // Setup validator to return success
+        var validationResult = new FluentValidation.Results.ValidationResult();
+        _mockUpdateMotorcycleValidator.Setup(x => x.ValidateAsync(request, default))
+            .ReturnsAsync(validationResult);
 
         _mockMotorcycleRepository.Setup(x => x.GetByIdAsync(id))
             .ReturnsAsync(existingMotorcycle);

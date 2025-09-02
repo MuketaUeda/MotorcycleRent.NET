@@ -28,7 +28,8 @@ public class CreateRentalDtoValidator : AbstractValidator<CreateRentalDto>
             .NotEmpty()
             .WithMessage("Expected end date is required")
             .GreaterThan(x => x.StartDate)
-            .WithMessage("Expected end date must be after start date");
+            .WithMessage("Expected end date must be after start date")
+            .When(x => x.StartDate != default);
 
         RuleFor(x => x.PlanType)
             .IsInEnum()

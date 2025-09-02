@@ -6,6 +6,7 @@ using Moto.Api.DTOs.Motorcycles;
 using Moto.Application.Interfaces;
 using Moto.Application.DTOs.Motorcycles;
 using AutoMapper;
+using FluentValidation;
 
 namespace Moto.Api.Controllers;
 
@@ -34,9 +35,13 @@ public class MotorcyclesController : ControllerBase{
             // Map from Application DTO to API DTO
             var responseDto = _mapper.Map<MotorcycleResponse>(result);
 
-            return Created($"/api/motorcycles/{responseDto.Id}", responseDto);
+            return Created($"/api/motorcycles/{responseDto.Id}", responseDto); //status code 201
         }
         catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (FluentValidation.ValidationException ex)
         {
             return BadRequest(ex.Message);
         }
@@ -49,13 +54,13 @@ public class MotorcyclesController : ControllerBase{
         
         if (motorcycleResponse == null)
         {
-            return NotFound();
+            return NotFound(); //status code 404
         }
         
         // Map from Application DTO to API DTO
         var responseDto = _mapper.Map<MotorcycleResponse>(motorcycleResponse);
         
-        return Ok(responseDto);
+        return Ok(responseDto); //status code 200
     }
 
     // Get method to get all motorcycles with optional plate filter
@@ -66,7 +71,7 @@ public class MotorcyclesController : ControllerBase{
         // Map from Application DTOs to API DTOs
         var responseDtos = _mapper.Map<IEnumerable<MotorcycleResponse>>(motorcycleResponses);
         
-        return Ok(responseDtos);
+        return Ok(responseDtos); //status code 200
     }
 
     // Update a motorcycle
@@ -83,11 +88,15 @@ public class MotorcyclesController : ControllerBase{
             // Map from Application DTO to API DTO
             var responseDto = _mapper.Map<MotorcycleResponse>(result);
 
-            return Ok(responseDto);
+            return Ok(responseDto); //status code 200
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(ex.Message); //status code 400
+        }
+        catch (FluentValidation.ValidationException ex)
+        {
+            return BadRequest(ex.Message); //status code 400
         }
     }
 
@@ -101,14 +110,18 @@ public class MotorcyclesController : ControllerBase{
             
             if (!result)
             {
-                return NotFound();
+                return NotFound(); //status code 404
             }
             
-            return NoContent();
+            return NoContent(); //status code 204
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(ex.Message); //status code 400
+        }
+        catch (FluentValidation.ValidationException ex)
+        {
+            return BadRequest(ex.Message); //status code 400
         }
     }
 }
