@@ -3,7 +3,7 @@ name: Build and Test
 on: [push, pull_request]
 
 env:
-  SOLUTION_FILE: 'moto-backend.sln'
+  SOLUTION_FILE: 'moto-backend/moto-backend.sln'
 
 jobs:
   build:
