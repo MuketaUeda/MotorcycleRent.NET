@@ -23,6 +23,7 @@
 - [🏗️ Arquitetura](#️-arquitetura)
 - [🛠️ Tecnologias](#️-tecnologias)
 - [🚀 Como Executar](#-como-executar)
+- [🔄 CI/CD Pipeline](#-cicd-pipeline)
 - [📚 Documentação da API](#-documentação-da-api)
 - [🧪 Testes](#-testes)
 - [🐳 Docker](#-docker)
@@ -55,6 +56,7 @@
 - **📚 API RESTful**: Documentada com Swagger/OpenAPI
 - **🔒 Validações**: FluentValidation para regras de negócio
 - **📈 Logs Estruturados**: ILogger em toda a aplicação (API, Services e Worker)
+- **🔄 CI/CD Pipeline**: GitHub Actions para build e testes automáticos
 
 ---
 
@@ -221,6 +223,36 @@ dotnet run
 #### 5. **Acesse a Aplicação**
 - **API**: http://localhost:5000
 - **Swagger**: http://localhost:5000
+
+---
+
+## 🔄 CI/CD Pipeline
+
+### 🚀 GitHub Actions
+
+O projeto possui um pipeline de CI/CD básico configurado via **GitHub Actions** que executa automaticamente a cada push e pull request.
+
+#### **Workflow: Build and Test**
+- **Localização**: `.github/workflows/ci-cd-basico.yml`
+- **Triggers**: Push para `main`/`develop` e Pull Requests
+- **Execução**: Ubuntu Latest com .NET 8.0
+
+#### **Etapas do Pipeline:**
+1. ✅ **Checkout** do código
+2. ✅ **Setup** do .NET 8.0
+3. ✅ **Restore** das dependências
+4. ✅ **Build** da solução (Release)
+5. ✅ **Testes** de todos os projetos
+
+#### **Status do Pipeline:**
+- 🟡 **Executando**: Workflow em andamento
+- ✅ **Sucesso**: Build e testes passaram
+- ❌ **Falha**: Erro no build ou testes
+
+#### **Como Verificar:**
+1. Acesse o repositório no GitHub
+2. Clique na aba **"Actions"**
+3. Visualize o workflow **"Build and Test"**
 
 ---
 
