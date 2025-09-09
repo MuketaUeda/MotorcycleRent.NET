@@ -1,4 +1,4 @@
-name: CI/CD Básico - Apenas Testes Unitários
+name: CI/CD Básico - Testes Unitários
 
 on:
   push:
