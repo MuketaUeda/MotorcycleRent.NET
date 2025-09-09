@@ -19,7 +19,7 @@ public class MotorcycleEventRepository : IMotorcycleEventRepository
     /// Add a motorcycle event to the database
     public async Task<MotorcycleEvent> AddAsync(MotorcycleEvent motorcycleEvent)
     {
-        _context.MotorcycleEvents.Add(motorcycleEvent);
+        await _context.MotorcycleEvents.AddAsync(motorcycleEvent);
         await _context.SaveChangesAsync();
         return motorcycleEvent;
     }

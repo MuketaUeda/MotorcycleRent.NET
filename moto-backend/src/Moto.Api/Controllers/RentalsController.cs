@@ -36,15 +36,15 @@ public class RentalsController : ControllerBase
             // Map from Application DTO to API DTO
             var responseDto = _mapper.Map<RentalResponse>(result);
 
-            return Created($"/api/rentals/{responseDto.Id}", responseDto);
+            return Created($"/api/rentals/{responseDto.Id}", responseDto); //status code 201
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(ex.Message); //status code 400
         }
         catch (FluentValidation.ValidationException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(ex.Message); //status code 400
         }
     }
 
@@ -87,7 +87,7 @@ public class RentalsController : ControllerBase
         }
         catch (FluentValidation.ValidationException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(ex.Message); //status code 400
         }
     }
 }

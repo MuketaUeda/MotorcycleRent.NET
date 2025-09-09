@@ -22,7 +22,6 @@ public class Rental
     [Required]
     public DateTime ExpectedEndDate { get; set; }
     
-    [Required]
     public DateTime? EndDate { get; set; }
     
     // Costs calculated
@@ -30,9 +29,9 @@ public class Rental
     
     public decimal? FineAmount { get; set; } // Fine for early return
     
-    public decimal? AdditionalDaysCost { get; set; } // Cost for aditional days
+    public decimal? AdditionalDaysCost { get; set; } // Cost for additional days
     
-    public int? AdditionalDays { get; set; } // Total of aditional days
+    public int? AdditionalDays { get; set; } // Total of additional days
     
     // Navigation properties
     public virtual Motorcycle Motorcycle { get; set; } = null!;

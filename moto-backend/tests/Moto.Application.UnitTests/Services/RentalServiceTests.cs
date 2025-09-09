@@ -115,6 +115,9 @@ public class RentalServiceTests
         _mockRentalRepository.Setup(x => x.AddAsync(It.IsAny<Rental>()))
             .ReturnsAsync(rental);
 
+        _mockMapper.Setup(x => x.Map<Rental>(request))
+            .Returns(rental);
+
         _mockMapper.Setup(x => x.Map<RentalDto>(rental))
             .Returns(rentalDto);
 

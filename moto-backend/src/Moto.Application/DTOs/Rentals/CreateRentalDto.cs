@@ -9,7 +9,7 @@ public class CreateRentalDto
     public required string MotorcycleId { get; set; }
     public required string CourierId { get; set; }
     public required DateTime StartDate { get; set; }
-    public required DateTime EndDate { get; set; }
+    public DateTime? EndDate { get; set; }
     public required DateTime ExpectedEndDate { get; set; }
     public required RentalPlan PlanType { get; set; }
 }

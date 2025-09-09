@@ -90,25 +90,14 @@ public class RentalService : IRentalService
             throw new InvalidOperationException("Motorcycle is not available for rental.");
         }
 
-        // Calculate dates according to business rules
-        var startDate = createRentalDto.StartDate;
-        var expectedEndDate = createRentalDto.ExpectedEndDate;
-
-        // Create rental entity
-        var rental = new Rental
-        {
-            Id = Guid.NewGuid(),
-            MotorcycleId = createRentalDto.MotorcycleId,
-            CourierId = createRentalDto.CourierId,
-            PlanType = createRentalDto.PlanType,
-            StartDate = startDate,
-            ExpectedEndDate = expectedEndDate,
-            EndDate = null, // Will be set when rental is returned
-            TotalCost = null,
-            FineAmount = null,
-            AdditionalDaysCost = null,
-            AdditionalDays = null
-        };
+        // Create rental entity using AutoMapper
+        var rental = _mapper.Map<Rental>(createRentalDto);
+        rental.Id = Guid.NewGuid();
+        rental.EndDate = null;
+        rental.TotalCost = null;
+        rental.FineAmount = null;
+        rental.AdditionalDaysCost = null;
+        rental.AdditionalDays = null;
 
         // Save to database
         var createdRental = await _rentalRepository.AddAsync(rental);
@@ -159,7 +148,7 @@ public class RentalService : IRentalService
 
         // Calculate costs based on actual rental period (from start date to return date)
         var actualRentalDays = (returnRentalDto.ReturnDate - rental.StartDate).Days;
-        var baseCost = actualRentalDays * GetDailyCost(rental.PlanType);
+        var baseCost = actualRentalDays * GetDailyRate(rental.PlanType);
         
         var additionalDays = 0;
         var additionalDaysCost = 0m;
@@ -169,7 +158,7 @@ public class RentalService : IRentalService
         {
             // Early return - calculate fine on unused days
             var unusedDays = (rental.ExpectedEndDate - returnRentalDto.ReturnDate).Days;
-            var unusedDaysCost = unusedDays * GetDailyCost(rental.PlanType);
+            var unusedDaysCost = unusedDays * GetDailyRate(rental.PlanType);
 
             // Calculate fine based on plan type
             fineAmount = rental.PlanType switch
@@ -224,34 +213,6 @@ public class RentalService : IRentalService
             RentalPlan.SevenDays => 0.20m,  // 20%
             RentalPlan.FifteenDays => 0.40m, // 40%
             _ => 0.00m // No fine for other plans
-        };
-    }
-
-    /// Get the cost of the plan
-    private decimal GetPlanCost(RentalPlan planType)
-    {
-        return planType switch
-        {
-            RentalPlan.SevenDays => 30.00m * 7,
-            RentalPlan.FifteenDays => 28.00m * 15,
-            RentalPlan.ThirtyDays => 22.00m * 30,
-            RentalPlan.FortyFiveDays => 20.00m * 45,
-            RentalPlan.FiftyDays => 18.00m * 50,
-            _ => throw new ArgumentException("Invalid plan type")
-        };
-    }
-
-    /// Get the daily cost for a plan
-    private decimal GetDailyCost(RentalPlan planType)
-    {
-        return planType switch
-        {
-            RentalPlan.SevenDays => 30.00m,
-            RentalPlan.FifteenDays => 28.00m,
-            RentalPlan.ThirtyDays => 22.00m,
-            RentalPlan.FortyFiveDays => 20.00m,
-            RentalPlan.FiftyDays => 18.00m,
-            _ => throw new ArgumentException("Invalid plan type")
         };
     }
 }

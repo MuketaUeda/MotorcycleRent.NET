@@ -1,5 +1,5 @@
-// DependencyInjection - Configuração da injeção de dependência da infraestrutura
-// Registra repositórios, DbContext e outros serviços da camada de infraestrutura
+// DependencyInjection - Configuration of dependency injection for the infrastructure layer
+// Registers repositories, DbContext and other services from the infrastructure layer
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,7 +11,9 @@ using Moto.Application.Interfaces;
 
 namespace Moto.Infrastructure;
 
+/// DependencyInjection - Configuration of dependency injection for the infrastructure layer
 public static class DependencyInjection{
+    /// Add infrastructure services to the container
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration){
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         services.AddDbContext<ApplicationDbContext>(options =>
@@ -21,7 +23,7 @@ public static class DependencyInjection{
         services.AddScoped<IRentalRepository, RentalRepository>();
         services.AddScoped<IMotorcycleEventRepository, MotorcycleEventRepository>();
         
-        // Add Infrastructure Services
+        // Add Infrastructure Services (RabbitMQ Event Publisher)
         services.AddSingleton<IEventPublisher, RabbitMqEventPublisher>();
         
         return services;
