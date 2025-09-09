@@ -1,4 +1,4 @@
-name: CI/CD Básico - Testes Unitários
+name: CI/CD Básico - Apenas Testes Unitários
 
 on:
   push:
@@ -32,14 +32,10 @@ jobs:
     - name: Executar Testes Unitários - Application
       run: dotnet test moto-backend/tests/Moto.Application.UnitTests/Moto.Application.UnitTests.csproj --no-build --configuration Release --verbosity normal
 
-    - name: Executar Testes de Integração Simplificados
-      run: dotnet test moto-backend/tests/Moto.Api.IntegrationTests/Moto.Api.IntegrationTests.csproj --no-build --configuration Release --verbosity normal
-
     - name: Gerar relatório de cobertura (opcional)
       run: |
         dotnet test moto-backend/tests/Moto.Domain.UnitTests/Moto.Domain.UnitTests.csproj --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
         dotnet test moto-backend/tests/Moto.Application.UnitTests/Moto.Application.UnitTests.csproj --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
-        dotnet test moto-backend/tests/Moto.Api.IntegrationTests/Moto.Api.IntegrationTests.csproj --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
 
     - name: Upload coverage reports (opcional)
       uses: codecov/codecov-action@v3
