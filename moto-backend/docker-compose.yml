@@ -47,7 +47,6 @@ services:
     container_name: moto-api
     ports:
       - "5000:8080"
-      - "5001:443"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=postgres;Database=moto_db;Username=moto_user;Password=moto_password
