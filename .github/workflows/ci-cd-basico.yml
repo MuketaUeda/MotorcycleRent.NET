@@ -1,27 +1,49 @@
-name: Build and Test
+name: CI/CD Básico - Testes Unitários
 
-on: [push, pull_request]
-
-env:
-  SOLUTION_FILE: 'moto-backend/moto-backend.sln'
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
 
 jobs:
-  build:
+  test:
+    name: Executar Testes Unitários
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout code
+    - name: Checkout código
       uses: actions/checkout@v4
-      
-    - name: Setup .NET
+
+    - name: Setup .NET 8.0
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
-        
-    - name: Restore dependencies
-      run: dotnet restore ${{ env.SOLUTION_FILE }}
-      
-    - name: Build solution
-      run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release
-      
-    - name: Run tests
-      run: dotnet test ${{ env.SOLUTION_FILE }} --no-build --verbosity normal --configuration Release
+
+    - name: Restaurar dependências
+      run: dotnet restore moto-backend/moto-backend.sln
+
+    - name: Build da solução
+      run: dotnet build moto-backend/moto-backend.sln --no-restore --configuration Release
+
+    - name: Executar Testes Unitários - Domain
+      run: dotnet test moto-backend/tests/Moto.Domain.UnitTests/Moto.Domain.UnitTests.csproj --no-build --configuration Release --verbosity normal
+
+    - name: Executar Testes Unitários - Application
+      run: dotnet test moto-backend/tests/Moto.Application.UnitTests/Moto.Application.UnitTests.csproj --no-build --configuration Release --verbosity normal
+
+    - name: Executar Testes de Integração Simplificados
+      run: dotnet test moto-backend/tests/Moto.Api.IntegrationTests/Moto.Api.IntegrationTests.csproj --no-build --configuration Release --verbosity normal
+
+    - name: Gerar relatório de cobertura (opcional)
+      run: |
+        dotnet test moto-backend/tests/Moto.Domain.UnitTests/Moto.Domain.UnitTests.csproj --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
+        dotnet test moto-backend/tests/Moto.Application.UnitTests/Moto.Application.UnitTests.csproj --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
+        dotnet test moto-backend/tests/Moto.Api.IntegrationTests/Moto.Api.IntegrationTests.csproj --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
+
+    - name: Upload coverage reports (opcional)
+      uses: codecov/codecov-action@v3
+      if: always()
+      with:
+        directory: ./coverage
+        fail_ci_if_error: false
