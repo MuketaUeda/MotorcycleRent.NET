@@ -48,10 +48,5 @@ public class MotorcycleEventValidator : AbstractValidator<MotorcycleEvent>
             .WithMessage("MotorcyclePlate cannot exceed 50 characters")
             .Matches(@"^[A-Z]{3}[0-9][0-9A-Z][0-9]{2}$")
             .WithMessage("MotorcyclePlate must be in Mercosul format (e.g., ABC1D23)");
-
-        RuleFor(x => x.AdditionalData)
-            .MaximumLength(1000)
-            .WithMessage("AdditionalData cannot exceed 1000 characters")
-            .When(x => !string.IsNullOrEmpty(x.AdditionalData));
     }
 }

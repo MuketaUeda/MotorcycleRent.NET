@@ -1,3 +1,5 @@
+// Program.cs - Main entry point for the worker
+// Configures and runs the worker
 using Moto.Worker;
 using Moto.Worker.Handlers;
 using Moto.Infrastructure;
@@ -20,7 +22,7 @@ builder.Services.AddAutoMapper(typeof(Moto.Application.Mappings.MappingProfile).
 builder.Services.AddValidatorsFromAssemblyContaining<CreateRentalDtoValidator>();
 
 // Add Worker services
-builder.Services.AddHostedService<Worker>();
+builder.Services.AddHostedService<Worker>(); 
 builder.Services.AddSingleton<MotorcycleCreatedHandler>();
 
 var host = builder.Build();

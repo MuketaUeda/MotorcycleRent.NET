@@ -1,4 +1,5 @@
-
+// MotorcycleEvent - Entity for motorcycle events
+// Represents a motorcycle event in the database
 using System.ComponentModel.DataAnnotations;
 
 namespace Moto.Domain.Entities;
@@ -27,9 +28,4 @@ public class MotorcycleEvent
     [Required]
     [StringLength(7)]
     public string MotorcyclePlate { get; set; } = string.Empty;
-    
-    public string? AdditionalData { get; set; }
-    
-    // Navigation property
-    public virtual Motorcycle? Motorcycle { get; set; }
 }

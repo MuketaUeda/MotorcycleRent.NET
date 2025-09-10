@@ -1,11 +1,11 @@
-# Dockerfile para o Worker Moto
-# Multi-stage build para processamento de mensagens
+# Dockerfile for the Moto Worker
+# Multi-stage build for message processing
 
 # Build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copiar arquivos de projeto e restaurar dependências
+# Copy project files and restore dependencies
 COPY ["Moto.Worker/Moto.Worker.csproj", "Moto.Worker/"]
 COPY ["Moto.Application/Moto.Application.csproj", "Moto.Application/"]
 COPY ["Moto.Domain/Moto.Domain.csproj", "Moto.Domain/"]
@@ -13,26 +13,26 @@ COPY ["Moto.Infrastructure/Moto.Infrastructure.csproj", "Moto.Infrastructure/"]
 
 RUN dotnet restore "Moto.Worker/Moto.Worker.csproj"
 
-# Copiar código fonte
+# Copy source code
 COPY . .
 WORKDIR "/src/Moto.Worker"
 
-# Build da aplicação
+# Build application
 RUN dotnet build "Moto.Worker.csproj" -c Release -o /app/build
 
-# Publish stage
+# Publish stage --> Intermediate stage
 FROM build AS publish
 RUN dotnet publish "Moto.Worker.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# Runtime stage
+# Runtime stage --> Final stage
 FROM mcr.microsoft.com/dotnet/runtime:8.0 AS final
 WORKDIR /app
 
-# Configurar variáveis de ambiente
+# Configure environment variables
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-# Copiar aplicação publicada
+# Copy published application
 COPY --from=publish /app/publish .
 
-# Comando de inicialização
+# Initialization command
 ENTRYPOINT ["dotnet", "Moto.Worker.dll"]

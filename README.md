@@ -50,7 +50,7 @@
 
 - **🏗️ Arquitetura Limpa**: Seguindo princípios SOLID e Clean Architecture
 - **🐳 Containerização**: Docker e Docker Compose para fácil deploy
-- **🧪 Testes Abrangentes**: 92 testes unitários e de integração
+- **🧪 Testes Abrangentes**: 113 testes unitários e de integração
 - **📊 Banco Robusto**: PostgreSQL com Entity Framework Core
 - **📨 Mensageria Assíncrona**: RabbitMQ para processamento de eventos
 - **📚 API RESTful**: Documentada com Swagger/OpenAPI
@@ -86,7 +86,7 @@
 ### 🔔 Sistema de Eventos
 - ✅ Notificações automáticas via RabbitMQ
 - ✅ Processamento assíncrono de eventos
-- ✅ Armazenamento de histórico de eventos
+- ✅ Armazenamento de eventos com dados da moto
 - ✅ Consumidor específico para motos 2024
 
 ---
@@ -285,7 +285,7 @@ GET /api/motorcycles?plate=ABC1234
 
 #### `DELETE /api/motorcycles/{id}` - Remover Moto
 ```
-DELETE /api/motorcycles/1
+DELETE /api/motorcycles/MOT001
 ```
 
 ### 🚚 Endpoints de Entregadores
@@ -303,7 +303,7 @@ DELETE /api/motorcycles/1
 
 #### `PUT /api/couriers/{id}/cnh` - Atualizar Foto da CNH
 ```
-PUT /api/couriers/1/cnh
+PUT /api/couriers/COU001/cnh
 Content-Type: multipart/form-data
 ```
 
@@ -312,8 +312,8 @@ Content-Type: multipart/form-data
 #### `POST /api/rentals` - Criar Aluguel
 ```json
 {
-  "motorcycleId": 1,
-  "courierId": 1,
+  "motorcycleId": "MOT001",
+  "courierId": "COU001",
   "plan": 7,
   "startDate": "2024-01-15",
   "endDate": "2024-01-22"
@@ -360,8 +360,8 @@ dotnet test --collect:"XPlat Code Coverage"
 ### 📈 Resultados dos Testes
 - **Domain UnitTests**: 41/41 ✅
 - **Application UnitTests**: 36/36 ✅
-- **API IntegrationTests**: 15/15 ✅
-- **Total**: 92/92 ✅
+- **API IntegrationTests**: 36/36 ✅
+- **Total**: 113/113 ✅
 
 ---
 
@@ -515,57 +515,53 @@ ASPNETCORE_URLS=http://localhost:5000;https://localhost:5001
 #### **Motorcycles** (Motos)
 ```sql
 CREATE TABLE Motorcycles (
-    Id SERIAL PRIMARY KEY,
-    Plate VARCHAR(10) UNIQUE NOT NULL,
+    Id VARCHAR(50) PRIMARY KEY,
+    Plate VARCHAR(7) UNIQUE NOT NULL,
     Year INTEGER NOT NULL,
-    Model VARCHAR(100) NOT NULL,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    Model VARCHAR(100) NOT NULL
 );
 ```
 
 #### **Couriers** (Entregadores)
 ```sql
 CREATE TABLE Couriers (
-    Id SERIAL PRIMARY KEY,
+    Id VARCHAR(50) PRIMARY KEY,
     Name VARCHAR(100) NOT NULL,
-    CNPJ VARCHAR(18) UNIQUE NOT NULL,
-    DateOfBirth DATE NOT NULL,
-    LicenseNumber VARCHAR(20) UNIQUE NOT NULL,
-    LicenseType VARCHAR(5) NOT NULL,
-    CNHImagePath VARCHAR(500),
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    Cnpj VARCHAR(14) UNIQUE NOT NULL,
+    BirthDate DATE NOT NULL,
+    CnhNumber VARCHAR(9) UNIQUE NOT NULL,
+    CnhType VARCHAR(5) NOT NULL,
+    CnhImageUrl VARCHAR(500)
 );
 ```
 
 #### **Rentals** (Aluguéis)
 ```sql
 CREATE TABLE Rentals (
-    Id SERIAL PRIMARY KEY,
-    MotorcycleId INTEGER REFERENCES Motorcycles(Id),
-    CourierId INTEGER REFERENCES Couriers(Id),
-    Plan INTEGER NOT NULL,
-    StartDate DATE NOT NULL,
-    EndDate DATE NOT NULL,
-    ExpectedEndDate DATE NOT NULL,
-    ReturnDate DATE,
+    Id UUID PRIMARY KEY,
+    MotorcycleId VARCHAR(50) NOT NULL,
+    CourierId VARCHAR(50) NOT NULL,
+    PlanType INTEGER NOT NULL,
+    StartDate TIMESTAMP NOT NULL,
+    ExpectedEndDate TIMESTAMP NOT NULL,
+    EndDate TIMESTAMP,
     TotalCost DECIMAL(10,2),
-    Status VARCHAR(20) DEFAULT 'Active',
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    FineAmount DECIMAL(10,2),
+    AdditionalDaysCost DECIMAL(10,2),
+    AdditionalDays INTEGER
 );
 ```
 
 #### **MotorcycleEvents** (Eventos de Motos)
 ```sql
 CREATE TABLE MotorcycleEvents (
-    Id SERIAL PRIMARY KEY,
-    MotorcycleId INTEGER REFERENCES Motorcycles(Id),
+    Id UUID PRIMARY KEY,
+    MotorcycleId VARCHAR(50) NOT NULL,
     EventType VARCHAR(50) NOT NULL,
-    EventData JSONB,
-    ProcessedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    EventDate TIMESTAMP NOT NULL,
+    MotorcycleYear INTEGER NOT NULL,
+    MotorcycleModel VARCHAR(100) NOT NULL,
+    MotorcyclePlate VARCHAR(7) NOT NULL
 );
 ```
 
@@ -633,9 +629,9 @@ Evento publicado → Fila RabbitMQ → Worker processa → Logs estruturados
 
 #### **MotorcycleCreatedHandler**
 - Processa eventos de motos criadas
-- Armazena no banco para consulta futura
+- Armazena dados da moto (ano, modelo, placa) no banco
 - Logs estruturados para auditoria
-- Notificações específicas para motos 2024
+- Filtro específico para motos 2024
 
 ---
 
