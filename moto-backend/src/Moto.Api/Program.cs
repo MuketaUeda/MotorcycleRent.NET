@@ -1,3 +1,4 @@
+// Configures and runs the API
 using Moto.Infrastructure;
 using Moto.Application;
 

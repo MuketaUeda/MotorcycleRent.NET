@@ -34,7 +34,7 @@ public class MotorcycleCreatedHandler
 
     private void InitializeConnection()
     {
-        if (_connection != null && _channel != null) return;
+        if (_connection != null && _channel != null) return; // Dont let initialize connection again
 
         var factory = new ConnectionFactory
         {
@@ -56,7 +56,8 @@ public class MotorcycleCreatedHandler
         // Bind queue to exchange
         _channel.QueueBind(QueueName, ExchangeName, RoutingKey);
     }
-
+    
+    // Start consuming motorcycle created events from queue
     public void StartConsuming()
     {
         try
@@ -65,32 +66,37 @@ public class MotorcycleCreatedHandler
             
             InitializeConnection();
             
+            // Create consumer
             var consumer = new EventingBasicConsumer(_channel!);
             
             consumer.Received += async (model, ea) =>
             {
                 try
                 {
+                    // Get body
                     var body = ea.Body.ToArray();
                     var message = Encoding.UTF8.GetString(body);
                     
                     _logger.LogInformation("Received motorcycle created event: {Message}", message);
                     
+                    // Deserialize message
                     var eventDto = JsonSerializer.Deserialize<MotorcycleCreatedEventDto>(message);
                     if (eventDto != null)
                     {
                         await ProcessMotorcycleCreatedEvent(eventDto);
                     }
                     
-                    _channel!.BasicAck(ea.DeliveryTag, false);
+                    // Acknowledge message - SUCCESS HANDLING
+                    _channel!.BasicAck(ea.DeliveryTag, false); // Acknowledge message
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error processing motorcycle created event");
-                    _channel!.BasicNack(ea.DeliveryTag, false, true);
+                    _channel!.BasicNack(ea.DeliveryTag, false, true); // Nack message
                 }
             };
 
+            // Consume messages - ERROR HANDLING
             _channel!.BasicConsume(queue: QueueName, autoAck: false, consumer: consumer);
             _logger.LogInformation("Successfully started consuming motorcycle created events from queue: {QueueName}", QueueName);
         }
@@ -101,6 +107,7 @@ public class MotorcycleCreatedHandler
         }
     }
 
+    // Process motorcycle created event
     private async Task ProcessMotorcycleCreatedEvent(MotorcycleCreatedEventDto eventDto)
     {
         // Validate the event DTO
@@ -155,6 +162,7 @@ public class MotorcycleCreatedHandler
             return;
         }
 
+        // Store motorcycle event
         await motorcycleEventRepository.AddAsync(motorcycleEvent);
         _logger.LogInformation("Stored motorcycle event for 2024 motorcycle: {Plate}", eventDto.Plate);
     }

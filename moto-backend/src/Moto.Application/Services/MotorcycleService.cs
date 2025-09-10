@@ -71,14 +71,15 @@ public class MotorcycleService : IMotorcycleService
             throw new InvalidOperationException("A motorcycle with this license plate already exists.");
         }
 
+        // Map request to motorcycle
         var motorcycle = _mapper.Map<Motorcycle>(request);
 
-        await _motorcycleRepository.AddAsync(motorcycle);
+        await _motorcycleRepository.AddAsync(motorcycle); // Add motorcycle to database
         _logger.LogInformation("Motorcycle created successfully: {Id}, {Plate}", motorcycle.Id, motorcycle.Plate);
         
         // Publish motorcycle created event
         var eventDto = _mapper.Map<MotorcycleCreatedEventDto>(motorcycle);
-        _eventPublisher?.PublishMotorcycleCreatedEvent(eventDto);
+        _eventPublisher?.PublishMotorcycleCreatedEvent(eventDto); // Publish motorcycle created event & verify if event publisher is not null
         _logger.LogInformation("Motorcycle created event published: {Id}", motorcycle.Id);
         
         return _mapper.Map<MotorcycleDto>(motorcycle);
